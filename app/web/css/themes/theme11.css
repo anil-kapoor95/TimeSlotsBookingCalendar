@@ -1,0 +1,402 @@
+/* ==========================================================================
+   Theme 11 - Time Slots Booking Calendar
+   Every colour, font, radius and shadow comes from the variables below.
+   The admin colour panel only overrides these variables; nothing else.
+   (pjActionLoadCss rewrites "pjWrapper" to the id of the calendar widget.)
+   ========================================================================== */
+#pjWrapper {
+	/* brand */
+	--tsb-primary: #c84e33;
+	--tsb-primary-contrast: #ffffff;
+	--tsb-accent: #2f6f6a;
+	/* surfaces */
+	--tsb-bg: #fbf1ec;
+	--tsb-surface: #ffffff;
+	/* text */
+	--tsb-heading: #3b1c14;
+	--tsb-text: #4a3730;
+	--tsb-muted: #7d625a;
+	--tsb-border: #efd9cf;
+	/* status */
+	--tsb-success: #2e7d5b;
+	--tsb-warning: #a85d00;
+	--tsb-danger: #b3261e;
+	/* shape */
+	--tsb-radius: 18px;
+	--tsb-radius-sm: 12px;
+	--tsb-radius-btn: 999px;
+	--tsb-shadow: 0 10px 28px rgba(0, 0, 0, .09);
+	/* type */
+	--tsb-font-body: 'Inter', -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+	--tsb-font-heading: 'Poppins', 'Inter', -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+	/* derived (computed from the base colours, never set by hand) */
+	--tsb-primary-hover: color-mix(in srgb, var(--tsb-primary) 82%, #000);
+	--tsb-primary-soft: color-mix(in srgb, var(--tsb-primary) 11%, var(--tsb-surface));
+	--tsb-primary-ring: color-mix(in srgb, var(--tsb-primary) 30%, transparent);
+	--tsb-accent-soft: color-mix(in srgb, var(--tsb-accent) 13%, var(--tsb-surface));
+	--tsb-warning-soft: color-mix(in srgb, var(--tsb-warning) 14%, var(--tsb-surface));
+	--tsb-danger-soft: color-mix(in srgb, var(--tsb-danger) 11%, var(--tsb-surface));
+	--tsb-success-soft: color-mix(in srgb, var(--tsb-success) 13%, var(--tsb-surface));
+	--tsb-line: color-mix(in srgb, var(--tsb-border) 75%, transparent);
+	--tsb-surface-alt: color-mix(in srgb, var(--tsb-surface) 55%, var(--tsb-bg));
+}
+
+/* ---------- base ---------- */
+#pjWrapper { container-type: inline-size; container-name: tsb; font-family: var(--tsb-font-body); font-size: 15px; line-height: 1.55; color: var(--tsb-text); background: var(--tsb-bg); border-radius: calc(var(--tsb-radius) + 6px); padding: 18px; text-align: left; -webkit-font-smoothing: antialiased; }
+#pjWrapper *, #pjWrapper *:before, #pjWrapper *:after { box-sizing: border-box; }
+#pjWrapper a { color: var(--tsb-primary); text-decoration: none; }
+#pjWrapper a:hover, #pjWrapper a:focus { color: var(--tsb-primary-hover); text-decoration: none; }
+#pjWrapper .btn:focus-visible, #pjWrapper .form-control:focus-visible, #pjWrapper a:focus-visible, #pjWrapper [tabindex]:focus-visible { outline: 3px solid var(--tsb-primary-ring); outline-offset: 2px; }
+#pjWrapper .glyphicon { top: 2px; }
+#pjWrapper .pull-left, #pjWrapper .pull-right { float: none !important; }
+#pjWrapper p { margin: 0 0 10px; }
+.form-control, body #pjWrapper { font-family: var(--tsb-font-body); }
+
+/* ---------- cards ---------- */
+#pjWrapper .pj-calendar, #pjWrapper .panel-primary, #pjWrapper .panel { background: var(--tsb-surface); border: 1px solid var(--tsb-border); border-radius: var(--tsb-radius); box-shadow: var(--tsb-shadow); overflow: hidden; margin: 0 0 16px; color: var(--tsb-text); }
+#pjWrapper .panel-primary .panel-heading, #pjWrapper .panel-heading { display: flex; align-items: center; gap: 10px; font-family: var(--tsb-font-heading); font-weight: 600; font-size: 17px; line-height: 1.3; text-transform: none; color: var(--tsb-heading); background: var(--tsb-surface); border: 0; border-bottom: 1px solid var(--tsb-line); border-radius: 0; padding: 18px 22px 14px; }
+#pjWrapper .panel-heading:before { content: ""; flex: none; width: 4px; height: 18px; border-radius: 4px; background: var(--tsb-primary); }
+#pjWrapper .panel-primary .panel-body, #pjWrapper .panel .panel-body { padding: 18px 22px; background: transparent; }
+#pjWrapper .panel-primary .panel-footer, #pjWrapper .panel .panel-footer, #pjWrapper .pj-calendar-footer { display: flex; justify-content: space-between; align-items: center; gap: 10px; flex-wrap: wrap; padding: 14px 22px; background: var(--tsb-surface-alt); border: 0; border-top: 1px solid var(--tsb-line); border-radius: 0; }
+#pjWrapper .pj-calendar-footer p, #pjWrapper .pj-calendar-footer p.pull-left { margin: 0; padding: 0 !important; color: var(--tsb-muted); font-size: 13px; font-weight: 600; flex: 1 1 auto; text-align: center !important; position: static; }
+#pjWrapper .panel-footer.text-center { justify-content: center; }
+#pjWrapper .panel-footer .pull-right, #pjWrapper .pj-calendar-footer .pull-right, #pjWrapper .pj-calendar-views .pull-right { margin-left: auto; }
+#pjWrapper .pj-calendar-tooltip-view { padding: 0; position: static; opacity: 1; background: transparent; }
+#pjWrapper .pj-calendar-tooltip-view .pj-calendar-footer { position: static; width: auto; }
+#pjWrapper .pj-calendar-tooltip-view-head { border: 0; padding: 18px 22px 8px; text-align: center; }
+
+/* ---------- buttons ---------- */
+#pjWrapper .btn { font-family: var(--tsb-font-body); font-weight: 600; font-size: 14px; line-height: 1.2; border-radius: var(--tsb-radius-btn); padding: 10px 20px; border: 1px solid transparent; text-shadow: none; box-shadow: none; background-image: none; display: inline-flex; align-items: center; justify-content: center; gap: 8px; transition: background-color .15s, border-color .15s, color .15s, transform .15s, box-shadow .15s; }
+#pjWrapper .btn-sm { padding: 8px 14px; }
+#pjWrapper .btn-primary { background: var(--tsb-primary); border-color: var(--tsb-primary); color: var(--tsb-primary-contrast); }
+#pjWrapper .btn-primary:hover, #pjWrapper .btn-primary:focus, #pjWrapper .btn-primary:active, #pjWrapper .btn-primary:active:hover, #pjWrapper .btn-primary:active:focus { background: var(--tsb-primary-hover); border-color: var(--tsb-primary-hover); color: var(--tsb-primary-contrast); transform: translateY(-1px); box-shadow: 0 8px 18px var(--tsb-primary-ring); }
+#pjWrapper .btn-default { background: var(--tsb-surface); border-color: var(--tsb-border); color: var(--tsb-heading); }
+#pjWrapper .btn-default:hover, #pjWrapper .btn-default:focus { background: var(--tsb-primary-soft); border-color: var(--tsb-primary); color: var(--tsb-primary); }
+#pjWrapper .btn[disabled], #pjWrapper .btn.disabled { opacity: .55; transform: none; box-shadow: none; }
+
+/* top bar (login / profile / language) and layout switch */
+#pjWrapper .pj-calendar-views { display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap; padding: 12px 16px; background: var(--tsb-surface); border: 0; }
+#pjWrapper .pj-calendar-views .btn-group { display: inline-flex; gap: 8px; float: none; }
+#pjWrapper .pj-calendar-views .btn-group > .btn, #pjWrapper .pj-calendar-views .btn-group > .btn-group { float: none; margin: 0; }
+#pjWrapper .pj-calendar-views .btn-group > .btn:not(:first-child):not(:last-child), #pjWrapper .pj-calendar-views .btn-group > .btn { border-radius: var(--tsb-radius-btn); }
+#pjWrapper .pj-calendar-views .btn-primary { font-size: 14px; }
+#pjWrapper .pj-calendar-views .btn-group:has(.pjTsViewTab) { gap: 2px; background: var(--tsb-surface-alt); border: 1px solid var(--tsb-border); border-radius: var(--tsb-radius-btn); padding: 3px; }
+#pjWrapper .pj-calendar-views .pjTsViewTab { background: transparent; border-color: transparent; color: var(--tsb-muted); padding: 7px 14px; }
+#pjWrapper .pj-calendar-views .pjTsViewTab:hover { background: var(--tsb-primary-soft); color: var(--tsb-primary); transform: none; box-shadow: none; }
+#pjWrapper .pj-calendar-views .pjTsViewTab.active { background: var(--tsb-primary); color: var(--tsb-primary-contrast); }
+#pjWrapper .pj-calendar-views select.form-control { height: 42px; min-width: 180px; }
+#pjWrapper .dropdown-menu { background: var(--tsb-surface); border: 1px solid var(--tsb-border); border-radius: var(--tsb-radius-sm); box-shadow: var(--tsb-shadow); padding: 6px; min-width: 200px !important; }
+#pjWrapper .dropdown-menu > li > a { color: var(--tsb-text); border-radius: 8px; padding: 8px 12px; font-size: 14px; }
+#pjWrapper .pj-calendar .pjTsLanguage ul li a:hover, #pjWrapper .pj-calendar .pjTsLanguage ul li a:focus, #pjWrapper .pj-calendar .pjTsLanguage .pjTsBtnActive { background: var(--tsb-primary-soft); color: var(--tsb-primary); }
+
+/* ---------- month calendar ---------- */
+#pjWrapper .pj-calendar-actions { position: static; display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 16px 18px 6px; }
+#pjWrapper .pj-calendar-actions:after { display: none; }
+#pjWrapper .pj-calendar-ym { position: static; width: auto; flex: 1; text-align: center; font-family: var(--tsb-font-heading); font-weight: 600; font-size: 21px; color: var(--tsb-heading); margin: 0; }
+#pjWrapper .pj-calendar-actions .btn, #pjWrapper .pj-calendar-actions .btn-primary { flex: none; width: 40px; height: 40px; padding: 0; background: var(--tsb-surface); border-color: var(--tsb-border); color: var(--tsb-heading); position: static; }
+#pjWrapper .pj-calendar-actions .btn:hover { background: var(--tsb-primary-soft); border-color: var(--tsb-primary); color: var(--tsb-primary); }
+#pjWrapper .pj-calendar-actions .text-muted { color: var(--tsb-muted); }
+#pjWrapper .pj-calendar-head { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; padding: 8px 18px 0; background: transparent; border: 0; }
+#pjWrapper .pj-calendar-head:after, #pjWrapper .pj-calendar-body:after { display: none; }
+#pjWrapper .pj-calendar-head .pj-calendar-day-header { width: auto; float: none; }
+#pjWrapper .pj-calendar-head p { margin: 0; padding: 6px 0; text-align: center; font-size: 11.5px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--tsb-muted); }
+#pjWrapper .pj-calendar-body { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; padding: 6px 18px 18px; background: transparent; }
+#pjWrapper .pj-calendar-body .pj-calendar-day { width: auto; float: none; background: transparent; }
+#pjWrapper .pj-calendar-day p { margin: 0; padding: 0; display: flex; align-items: center; justify-content: center; position: relative; height: 56px; border-radius: var(--tsb-radius-sm); font-size: 15px; font-weight: 600; color: var(--tsb-accent); background: var(--tsb-accent-soft); border: 1px solid transparent; cursor: pointer; transition: background-color .15s, color .15s, transform .15s; }
+#pjWrapper .pj-calendar-day p:hover { background: var(--tsb-accent); color: var(--tsb-surface); transform: translateY(-1px); }
+#pjWrapper .pj-calendar-day-disabled p, #pjWrapper .pj-calendar-day-disabled p:hover { background: transparent; border-color: transparent; cursor: default; transform: none; }
+#pjWrapper .pj-calendar-day-past p, #pjWrapper .pj-calendar-day-past p:hover { background: transparent; color: var(--tsb-muted); opacity: .5; cursor: not-allowed; transform: none; }
+#pjWrapper .pj-calendar-day-inactive p, #pjWrapper .pj-calendar-day-inactive p:hover { background: repeating-linear-gradient(135deg, var(--tsb-surface-alt) 0 6px, var(--tsb-surface) 6px 12px); color: var(--tsb-muted); border-color: var(--tsb-line); cursor: not-allowed; transform: none; }
+#pjWrapper .pj-calendar-day-partly p { background: var(--tsb-warning-soft); color: var(--tsb-warning); }
+#pjWrapper .pj-calendar-day-partly p:hover { background: var(--tsb-warning); color: var(--tsb-surface); }
+#pjWrapper .pj-calendar-day-today p, #pjWrapper .pj-calendar-day-today p:hover { box-shadow: inset 0 0 0 2px var(--tsb-primary); color: var(--tsb-primary); font-weight: 800; background: var(--tsb-primary-soft); }
+#pjWrapper .pj-calendar-day-today.pj-calendar-day-partly p { background: var(--tsb-warning-soft); }
+#pjWrapper .pj-calendar-day-selected p, #pjWrapper .pj-calendar-day-selected p:hover { background: var(--tsb-primary); color: var(--tsb-primary-contrast); }
+#pjWrapper .pj-calendar-legends { display: flex; flex-wrap: wrap; gap: 8px 18px; margin: 0; padding: 12px 22px; border-top: 1px solid var(--tsb-line); font-size: 12.5px; color: var(--tsb-muted); overflow: visible; }
+#pjWrapper .pj-calendar-legends .legend { display: inline-flex; align-items: center; gap: 7px; float: none; margin: 0; line-height: 1.3; }
+#pjWrapper .pj-calendar-legends span { float: none; width: 14px; height: 14px; margin: 0; border-radius: 5px; border: 1px solid var(--tsb-line); flex: none; }
+#pjWrapper .pj-calendar-legends span.past { background: transparent; opacity: .6; border-style: dashed; }
+#pjWrapper .pj-calendar-legends span.today { background: var(--tsb-primary-soft); box-shadow: inset 0 0 0 2px var(--tsb-primary); }
+#pjWrapper .pj-calendar-legends span.partly { background: var(--tsb-warning-soft); border-color: var(--tsb-warning); }
+#pjWrapper .pj-calendar-legends span.avail { background: var(--tsb-accent-soft); border-color: var(--tsb-accent); }
+#pjWrapper .pj-calendar-legends span.booked { background: repeating-linear-gradient(135deg, var(--tsb-surface-alt) 0 3px, var(--tsb-surface) 3px 6px); }
+
+/* ---------- weekly layout ---------- */
+#pjWrapper .pjTsWeeklyViewBody { overflow-x: auto; overflow-y: hidden; padding: 6px 14px 16px; }
+#pjWrapper .pjTsWeeklyViewBody .pjTsWeeklyViewBodyInner { min-width: 560px; }
+#pjWrapper .pj-calendar-head2 { grid-template-columns: 64px repeat(7, minmax(56px, 1fr)); padding: 0; }
+#pjWrapper .pj-calendar-head2 .pj-calendar-day-header { width: auto; }
+#pjWrapper .pj-calendar-head2 .pj-calendar-day-header:first-child { position: sticky; left: 0; z-index: 2; background: var(--tsb-surface); }
+#pjWrapper .pjTsWeeklyViewBody .pj-calendar-body { display: block; padding: 0; }
+#pjWrapper .pjTsWeeklyViewBody .pj-calendar-body form { display: grid; grid-template-columns: 64px repeat(7, minmax(56px, 1fr)); gap: 6px; margin: 0; }
+#pjWrapper .pj-calendar-column { width: auto; float: none; display: flex; flex-direction: column; gap: 6px; }
+#pjWrapper .pj-calendar-column:first-child { position: sticky; left: 0; z-index: 2; background: var(--tsb-surface); }
+#pjWrapper .pj-calendar-column:nth-child(2n+1) .pj-calendar-cell, #pjWrapper .pj-calendar-cell { background: var(--tsb-surface-alt); }
+#pjWrapper .pj-calendar-cell { height: 46px; min-height: 0; padding: 0; border-radius: var(--tsb-radius-sm); display: flex; align-items: center; justify-content: center; text-align: center; color: var(--tsb-muted); font-size: 13px; }
+#pjWrapper .pj-calendar-cell p { margin: 0; padding: 0; font-size: 13px; color: var(--tsb-muted); }
+#pjWrapper .pj-calendar-column:first-child .pj-calendar-cell { background: var(--tsb-surface); }
+#pjWrapper .pj-calendar-cell p.pjTsWeeklyTime, #pjWrapper .pj-calendar-column:first-child .pj-calendar-cell p { font-weight: 600; font-size: 14px; color: var(--tsb-heading); }
+#pjWrapper .pj-calendar-cell:has(label.pjTsWeeklyIconAvailable) { background: var(--tsb-accent-soft); cursor: pointer; border: 1px solid transparent; }
+#pjWrapper .pj-calendar-cell:has(label.pjTsWeeklyIconAvailable):hover { border-color: var(--tsb-accent); }
+#pjWrapper .pj-calendar-cell:has(label.pjTsWeeklyIconSelected) { background: var(--tsb-primary); }
+#pjWrapper .pj-calendar-cell:has(.booked-btn) { background: repeating-linear-gradient(135deg, var(--tsb-danger-soft) 0 6px, var(--tsb-surface) 6px 12px); }
+#pjWrapper .pj-calendar-cell label { margin: 0; display: flex; align-items: center; justify-content: center; cursor: pointer; width: 100%; height: 100%; background: none; }
+#pjWrapper .pj-calendar-cell .booked-btn { background: none; width: 100%; height: 100%; margin: 0; top: 0; }
+#pjWrapper .pj-calendar-cell label.pjTsWeeklyIconSelected span { background-position: 0 0; }
+#pjWrapper .pj-calendar-cell select.form-control { height: 30px; padding: 2px 4px; font-size: 12px; min-width: 0; max-width: 90%; }
+#pjWrapper .pj-calendar-column .pj-calendar-rowspan { display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; font-size: 12px; color: var(--tsb-muted); padding: 6px; }
+#pjWrapper .pj-calendar-column .pj-calendar-rowspan br { display: none; }
+
+/* custom checkbox (slots + weekly) */
+#pjWrapper .custom-checkbox { position: relative; top: 0; width: 28px; height: 28px; border-radius: 9px; border: 2px solid var(--tsb-accent); background: var(--tsb-surface); display: inline-flex; align-items: center; justify-content: center; flex: none; transition: all .15s; }
+#pjWrapper .custom-checkbox.selected, #pjWrapper .pjTsWeeklyIconSelected .custom-checkbox, #pjWrapper .pjTsIconRemove .custom-checkbox, #pjWrapper .selected-item .custom-checkbox { background: var(--tsb-primary); border-color: var(--tsb-primary); }
+#pjWrapper .pjTsWeeklyIconSelected .custom-checkbox { border-color: var(--tsb-primary-contrast); }
+#pjWrapper .pjTsWeeklyIconSelected .custom-checkbox:after, #pjWrapper .pjTsIconRemove .custom-checkbox:after, #pjWrapper .selected-item .custom-checkbox:after { content: ""; position: absolute; left: 50%; top: 50%; display: block; box-sizing: content-box; width: 6px; height: 12px; margin: -8px 0 0 -4px; border: solid var(--tsb-primary-contrast); border-width: 0 2.5px 2.5px 0; transform: rotate(45deg); }
+#pjWrapper li:hover .pjTsIconAdd .custom-checkbox { background: var(--tsb-accent-soft); }
+
+/* ---------- day view + cart lists ---------- */
+#pjWrapper .pj-calendar-d { font-family: var(--tsb-font-heading); font-weight: 600; font-size: 21px; color: var(--tsb-heading); }
+#pjWrapper .pj-calendar-view-body { width: auto; padding: 8px 18px 14px; }
+#pjWrapper .panel-body .tooltip-view-table, #pjWrapper .tooltip-view-table { list-style: none; margin: 0; padding: 0; border: 0; text-align: left; }
+#pjWrapper .tooltip-view-table li { display: grid; grid-template-columns: 1fr 1fr 1.2fr 1.3fr; align-items: center; gap: 8px; padding: 11px 14px; margin: 0 0 8px; border: 1px solid var(--tsb-line); border-radius: var(--tsb-radius-sm); background: var(--tsb-surface); color: var(--tsb-heading); font-size: 15px; font-weight: 600; line-height: 1.4; transition: border-color .15s, background-color .15s, box-shadow .15s; }
+#pjWrapper .tooltip-view-table li:after, #pjWrapper .tooltip-view-table li:before { display: none; }
+#pjWrapper .tooltip-view-table li div { float: none; width: auto; padding: 0; min-width: 0; }
+#pjWrapper .tooltip-view-table li > div[style*="none"] { display: none; }
+#pjWrapper .tooltip-view-table li:has(> div:nth-child(5):not([style*="none"])) { grid-template-columns: 1fr 1fr 1.2fr 1.3fr 1fr; }
+#pjWrapper .tooltip-view-table li + li { border-top: 1px solid var(--tsb-line); }
+#pjWrapper .tooltip-view-table li:first-child { background: transparent; border: 0; box-shadow: none; padding: 0 14px 2px; font-size: 11.5px; letter-spacing: .08em; text-transform: uppercase; color: var(--tsb-muted); }
+#pjWrapper .tooltip-view-table li:first-child strong { font-weight: 700; color: var(--tsb-muted); }
+#pjWrapper .tooltip-view-table strong, #pjWrapper .tooltip-view-table span { display: inline-block; vertical-align: baseline; }
+#pjWrapper .tooltip-view-table li.pjTsSelectorAddToCart, #pjWrapper .tooltip-view-table li.pjTsSelectorRemoveFromCart { cursor: pointer; }
+#pjWrapper .pj-calendar-view-body .tooltip-view-table li.pjTsSelectorAddToCart:hover { background: var(--tsb-surface); border-color: var(--tsb-accent); color: var(--tsb-heading); box-shadow: 0 4px 14px color-mix(in srgb, var(--tsb-accent) 16%, transparent); }
+#pjWrapper .pj-calendar-view-body .tooltip-view-table .selected-item, #pjWrapper .pj-calendar-view-body .tooltip-view-table .selected-item:hover { background: var(--tsb-primary-soft); border-color: var(--tsb-primary); color: var(--tsb-heading); }
+#pjWrapper .tooltip-view-table .selected-item span { color: inherit; }
+#pjWrapper .pj-calendar-view-body .tooltip-view-table .booked-item, #pjWrapper .pj-calendar-view-body .tooltip-view-table .booked-item:hover { background: var(--tsb-danger-soft); border-color: transparent; color: var(--tsb-heading); cursor: default; }
+#pjWrapper .tooltip-view-table .booked-item span { color: inherit; }
+#pjWrapper .pj-calendar-view-body .tooltip-view-table .past-item, #pjWrapper .pj-calendar-view-body .tooltip-view-table .past-item:hover { opacity: .55; background: var(--tsb-surface-alt); border-color: var(--tsb-line); cursor: default; }
+#pjWrapper .tooltip-view-table .past-item span { color: inherit; }
+#pjWrapper .tooltip-view-table .tooltip-available, #pjWrapper .tooltip-view-table .tooltip-booked, #pjWrapper .tooltip-view-table .tooltip-past { display: inline-block; font-size: 12.5px; font-weight: 700; padding: 4px 12px; border-radius: 999px; border: 0; }
+#pjWrapper .tooltip-view-table .tooltip-available { background: var(--tsb-accent-soft); color: var(--tsb-accent); }
+#pjWrapper .tooltip-view-table .selected-item .tooltip-available { background: var(--tsb-primary); color: var(--tsb-primary-contrast); }
+#pjWrapper .tooltip-view-table .tooltip-booked { background: var(--tsb-danger-soft); color: var(--tsb-danger); border: 1px solid color-mix(in srgb, var(--tsb-danger) 25%, transparent); }
+#pjWrapper .tooltip-view-table .tooltip-past { background: var(--tsb-surface-alt); color: var(--tsb-muted); }
+#pjWrapper .tooltip-view-table li > div:nth-child(4) { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+#pjWrapper .tooltip-view-table label { margin: 0; display: inline-flex; }
+#pjWrapper .tooltip-view-table .pjTsSelectorAddToCart label.pjTsIconAdd, #pjWrapper .tooltip-view-table .pjTsSelectorRemoveFromCart label.pjTsIconRemove { width: auto; height: auto; background: none; top: 0; border: 0; }
+#pjWrapper .tooltip-view-table select.slot-select, #pjWrapper .tooltip-view-table .form-control { height: 38px; padding: 4px 10px; font-size: 14px; }
+#pjWrapper .tooltip-view-table .delete-btn { margin: 0; }
+#pjWrapper .tooltip-view-table li > div:nth-child(5) { text-align: right; }
+#pjWrapper .delete-btn { position: relative; width: 32px; height: 32px; border-radius: 10px; border: 1px solid var(--tsb-border); background: var(--tsb-surface); cursor: pointer; display: inline-block; vertical-align: middle; top: 0; float: none !important; }
+#pjWrapper .delete-btn:before, #pjWrapper .delete-btn:after { content: ""; position: absolute; left: 50%; top: 50%; width: 12px; height: 2px; margin: -1px 0 0 -6px; background: var(--tsb-danger); border-radius: 2px; transform: rotate(45deg); }
+#pjWrapper .delete-btn:after { transform: rotate(-45deg); }
+#pjWrapper .delete-btn:hover { background: var(--tsb-danger-soft); border-color: var(--tsb-danger); }
+/* cart + order summary rows (date, start, end, price, qty) */
+#pjWrapper .tsb-cart-list li { grid-template-columns: 1.3fr 1fr 1fr 1fr .8fr; }
+#pjWrapper .tsb-cart-list li > div:nth-child(4) { display: block; }
+#pjWrapper .tsb-cart-list li > div:nth-child(5) { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+#pjWrapper .tsb-cart-list li:first-child { grid-template-columns: 1.3fr 1fr 1fr 1fr .8fr; }
+
+/* ---------- totals ---------- */
+#pjWrapper .tooltip-view-table + .pj-calendar-booking-summary, #pjWrapper .pj-calendar-booking-summary { margin-top: 6px; }
+#pjWrapper .pj-calendar-booking-summary { border: 0; background: transparent; }
+#pjWrapper .tooltip-view-table + .pj-calendar-booking-summary { background: var(--tsb-surface-alt); border-radius: var(--tsb-radius-sm); padding: 4px 18px; }
+#pjWrapper .pj-calendar-booking-summary ul { list-style: none; margin: 0; padding: 0; }
+#pjWrapper .pj-calendar-booking-summary li { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; padding: 10px 0; font-size: 15px; border-bottom: 1px dashed var(--tsb-line); }
+#pjWrapper .pj-calendar-booking-summary li:last-child { border-bottom: 0; }
+#pjWrapper .pj-calendar-booking-summary li:after, #pjWrapper .pj-calendar-booking-summary li:before { display: none; }
+#pjWrapper .pj-calendar-booking-summary span { float: none; color: var(--tsb-muted); text-transform: uppercase; letter-spacing: .05em; font-size: 12.5px; font-weight: 700; }
+#pjWrapper .pj-calendar-booking-summary strong { float: none; color: var(--tsb-heading); font-weight: 700; }
+#pjWrapper .pj-calendar-booking-summary li:nth-last-child(2) strong { color: var(--tsb-primary); font-family: var(--tsb-font-heading); font-size: 20px; }
+#pjWrapper #pjTsBookingSummaryBox .pj-calendar-booking-summary li:last-child { margin-top: 6px; padding: 12px 14px; border: 0; border-radius: var(--tsb-radius-sm); background: var(--tsb-primary-soft); }
+#pjWrapper #pjTsBookingSummaryBox .pj-calendar-booking-summary li:last-child span { color: var(--tsb-primary); }
+#pjWrapper #pjTsBookingSummaryBox .pj-calendar-booking-summary li:last-child strong { color: var(--tsb-primary); font-family: var(--tsb-font-heading); font-size: 19px; }
+
+/* ---------- forms ---------- */
+#pjWrapper .pj-calendar-form { display: grid; grid-template-columns: 1fr 1fr; gap: 14px 16px; border: 0; background: transparent; padding: 0; }
+#pjWrapper .pj-calendar-form:before, #pjWrapper .pj-calendar-form:after { display: none; }
+#pjWrapper .pj-calendar-form .row, #pjWrapper .pj-calendar-form .row + .row { display: flex; flex-direction: column; gap: 6px; margin: 0; padding: 0; min-width: 0; }
+#pjWrapper .pj-calendar-form .row:before, #pjWrapper .pj-calendar-form .row:after { display: none; }
+#pjWrapper .pj-calendar-form .row > [class*="col-"], #pjWrapper .modal-body .row > [class*="col-"] { float: none; width: auto; padding: 0; min-height: 0; }
+#pjWrapper .pj-calendar-form .control-label { display: block; padding: 0; margin: 0; font-weight: 600; font-size: 13.5px; color: var(--tsb-heading); text-align: left; }
+#pjWrapper .pj-calendar-form .control-label span, #pjWrapper .control-label span.tsAsterisk, #pjWrapper .tsAsterisk, #pjWrapper .asterisk { color: var(--tsb-danger); margin-left: 2px; }
+/* rows that always span the full width */
+#pjWrapper .pj-calendar-form .pjTsSelectorBank, #pjWrapper .pj-calendar-form .row:has(.g-recaptcha), #pjWrapper .pj-calendar-form .row:has(input[name="terms"]), #pjWrapper .pj-calendar-form .row:has(input[name="voucher_code"]), #pjWrapper .pj-calendar-form .row:has(> .col-md-12), #pjWrapper .pj-calendar-form .row:has(> .col-lg-12) { grid-column: 1 / -1; }
+#pjWrapper .pj-calendar-form .pjTsSelectorBank[style*="none"] { display: none; }
+#pjWrapper .pj-calendar-form .pjTsSelectorBank .text-muted { display: block; padding: 12px 14px; border-radius: var(--tsb-radius-sm); background: var(--tsb-surface-alt); color: var(--tsb-text); font-size: 13.5px; white-space: pre-line; }
+#pjWrapper .form-control { width: 100%; height: 46px; padding: 10px 14px; font: 15px/1.4 var(--tsb-font-body); color: var(--tsb-text); background-color: var(--tsb-surface); border: 1px solid var(--tsb-border); border-radius: var(--tsb-radius-sm); box-shadow: none; transition: border-color .15s, box-shadow .15s; }
+#pjWrapper select.form-control { appearance: none; -webkit-appearance: none; padding-right: 36px; background-image: linear-gradient(45deg, transparent 50%, var(--tsb-muted) 50%), linear-gradient(135deg, var(--tsb-muted) 50%, transparent 50%); background-position: calc(100% - 20px) 20px, calc(100% - 14px) 20px; background-size: 6px 6px; background-repeat: no-repeat; }
+#pjWrapper .pj-calendar-form textarea.form-control, #pjWrapper textarea.form-control { height: 96px; resize: vertical; }
+#pjWrapper .form-control:focus { outline: 0; border-color: var(--tsb-primary); box-shadow: 0 0 0 4px var(--tsb-primary-ring); }
+#pjWrapper .form-control::placeholder { color: color-mix(in srgb, var(--tsb-muted) 70%, transparent); }
+#pjWrapper .form-control-static, #pjWrapper .pj-calendar-form .form-control-static { padding: 0 !important; min-height: 0; margin: 0; color: var(--tsb-heading); font-weight: 500; overflow-wrap: anywhere; }
+#pjWrapper .help-block { margin: 0; }
+#pjWrapper .help-block ul { margin: 0; padding: 0; list-style: none; }
+#pjWrapper .help-block li, #pjWrapper li.error, #pjWrapper .with-errors li { font-size: 12.5px; font-weight: 600; color: var(--tsb-danger); margin-top: 6px; display: flex; gap: 6px; align-items: center; }
+#pjWrapper .help-block li:empty, #pjWrapper .with-errors li:empty, #pjWrapper li.error:empty { display: none !important; }
+#pjWrapper .help-block li:before { content: "!"; flex: none; width: 15px; height: 15px; border-radius: 50%; background: var(--tsb-danger); color: var(--tsb-surface); font-size: 10px; line-height: 15px; text-align: center; }
+#pjWrapper .has-error .form-control, #pjWrapper .row.has-error .form-control, #pjWrapper .form-group.has-error .form-control { border-color: var(--tsb-danger); background-color: var(--tsb-danger-soft); box-shadow: none; }
+#pjWrapper .has-error .control-label { color: var(--tsb-danger); }
+#pjWrapper .has-success .form-control { border-color: var(--tsb-border); box-shadow: none; }
+#pjWrapper .pj-calendar-form .row .row { display: flex; flex-direction: row; flex-wrap: wrap; align-items: center; gap: 10px 14px; }
+#pjWrapper .pj-calendar-form .row .row > [class*="col-"] { flex: 0 1 auto; }
+#pjWrapper .pj-calendar-form .row .row > [class*="col-"]:has(input[name="captcha"]), #pjWrapper .pj-calendar-form .row .row > [class*="col-"]:has(input[name="voucher_code"]) { flex: 1 1 120px; max-width: 200px; }
+#pjWrapper .pj-calendar-form .row:has(input[name="voucher_code"]) .row > [class*="col-"]:has(input[name="voucher_code"]) { flex: 1 1 200px; max-width: none; }
+#pjWrapper .pjTsCaptchaImage { border-radius: var(--tsb-radius-sm); border: 1px dashed var(--tsb-border); background: var(--tsb-surface-alt); max-width: 100%; height: auto; }
+#pjWrapper .pj-calendar-form .row:has(input[name="terms"]) > label { display: none; }
+#pjWrapper .pj-calendar-form .row:has(input[name="terms"]) > div > div[style] { display: flex !important; gap: 10px; align-items: flex-start; overflow: visible !important; }
+#pjWrapper .pj-calendar-form .row:has(input[name="terms"]) span { float: none !important; width: auto !important; }
+#pjWrapper input[type="checkbox"] { width: 18px; height: 18px; accent-color: var(--tsb-primary); }
+#pjWrapper .pj-calendar-form .row:has(input[name="terms"]) input { margin-top: 2px !important; }
+#pjWrapper .tsServiceLink { color: var(--tsb-primary); font-weight: 600; }
+#pjWrapper .alert { border-radius: var(--tsb-radius-sm); border: 1px solid transparent; padding: 12px 16px; margin: 10px 0 0; font-size: 14px; }
+#pjWrapper .alert-success { background: var(--tsb-success-soft); border-color: color-mix(in srgb, var(--tsb-success) 28%, transparent); color: var(--tsb-success); }
+#pjWrapper .alert-info { background: var(--tsb-accent-soft); border-color: color-mix(in srgb, var(--tsb-accent) 28%, transparent); color: var(--tsb-accent); }
+#pjWrapper .alert-danger { background: var(--tsb-danger-soft); border-color: color-mix(in srgb, var(--tsb-danger) 28%, transparent); color: var(--tsb-danger); }
+#pjWrapper .text-danger { color: var(--tsb-danger); }
+#pjWrapper .text-muted { color: var(--tsb-muted); }
+
+/* ---------- login / profile / forgot: single-column forms ---------- */
+#pjWrapper .modal-content { background: var(--tsb-surface); color: var(--tsb-text); border: 1px solid var(--tsb-border); border-radius: var(--tsb-radius); box-shadow: 0 24px 60px rgba(0, 0, 0, .3); overflow: hidden; }
+#pjWrapper .modal-header { border-bottom: 1px solid var(--tsb-line); padding: 18px 22px 14px; }
+#pjWrapper .modal-title { font-family: var(--tsb-font-heading); font-weight: 600; font-size: 17px; color: var(--tsb-heading); }
+#pjWrapper .modal-header .close { color: var(--tsb-muted); opacity: 1; text-shadow: none; }
+#pjWrapper .modal-body { padding: 18px 22px; }
+#pjWrapper .modal-footer { border-top: 1px solid var(--tsb-line); background: var(--tsb-surface-alt); padding: 14px 22px; }
+#pjWrapper .modal-body .form-group { margin-bottom: 14px; }
+#pjWrapper .modal-body .control-label, #pjWrapper .form-group .control-label { font-weight: 600; font-size: 13.5px; color: var(--tsb-heading); }
+#pjWrapper .modal-body .text-right .btn + .btn { margin-left: 6px; }
+#pjWrapper .pjTbModal .modal-body { text-align: center; }
+
+/* ---------- elements shown only by this theme (see pjActionLoadCss) ---------- */
+#pjWrapper .tsb-only { display: block; }
+#pjWrapper .tsb-steps { display: flex; align-items: center; gap: 8px; margin: 0 0 16px; padding: 0 4px; list-style: none; font-size: 13px; font-weight: 600; color: var(--tsb-muted); }
+#pjWrapper .tsb-steps li { display: flex; align-items: center; gap: 8px; flex: 1 1 auto; margin: 0; }
+#pjWrapper .tsb-steps li:last-child { flex: 0 0 auto; }
+#pjWrapper .tsb-steps li:not(:last-child):after { content: ""; flex: 1; height: 2px; min-width: 12px; background: var(--tsb-border); border-radius: 2px; margin-left: 4px; }
+#pjWrapper .tsb-steps li.done:not(:last-child):after { background: var(--tsb-success); }
+#pjWrapper .tsb-steps .n { width: 28px; height: 28px; border-radius: 50%; border: 2px solid var(--tsb-border); display: inline-flex; align-items: center; justify-content: center; font-size: 13px; background: var(--tsb-surface); flex: none; color: var(--tsb-muted); }
+#pjWrapper .tsb-steps li.done .n { background: var(--tsb-success); border-color: var(--tsb-success); color: #fff; }
+#pjWrapper .tsb-steps li.cur { color: var(--tsb-heading); }
+#pjWrapper .tsb-steps li.cur .n { background: var(--tsb-primary); border-color: var(--tsb-primary); color: var(--tsb-primary-contrast); box-shadow: 0 0 0 4px var(--tsb-primary-ring); }
+#pjWrapper .tsb-sec-title { grid-column: 1 / -1; display: flex; align-items: center; gap: 10px; margin: 6px 0 -2px; font-size: 12.5px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--tsb-muted); }
+#pjWrapper .tsb-sec-title:first-child { margin-top: 0; }
+#pjWrapper .tsb-sec-title:after { content: ""; flex: 1; height: 1px; background: var(--tsb-line); }
+#pjWrapper .tsb-lead { margin: 0 0 18px; color: var(--tsb-muted); }
+
+/* ---------- compact booking form (details + confirm step) ----------
+   6-column grid inside the form column: 3 fields per row when there is room, 2 on small widths. */
+#pjWrapper .tsb-co > .tsb-main { container-type: inline-size; container-name: tsbmain; }
+#pjWrapper .tsb-main .panel-body { padding: 16px 22px; }
+#pjWrapper .tsb-main .pj-calendar-form { grid-template-columns: repeat(6, minmax(0, 1fr)); grid-auto-flow: row dense; gap: 12px 14px; }
+#pjWrapper .tsb-main .pj-calendar-form > .row { grid-column: span 6; gap: 4px; }
+#pjWrapper .tsb-main .pj-calendar-form > .tsb-f-phone, #pjWrapper .tsb-main .pj-calendar-form > .tsb-f-country, #pjWrapper .tsb-main .pj-calendar-form > .tsb-f-state, #pjWrapper .tsb-main .pj-calendar-form > .tsb-f-city, #pjWrapper .tsb-main .pj-calendar-form > .tsb-f-zip { grid-column: span 3; }
+#pjWrapper .tsb-main .pj-calendar-form .control-label { font-size: 13px; }
+#pjWrapper .tsb-main .form-control { height: 42px; padding: 8px 12px; }
+#pjWrapper .tsb-main select.form-control { background-position: calc(100% - 20px) 18px, calc(100% - 14px) 18px; }
+#pjWrapper .tsb-main .pj-calendar-form textarea.form-control { height: 64px; }
+#pjWrapper .tsb-main .help-block li { margin-top: 4px; font-size: 12px; }
+#pjWrapper .tsb-main .tsb-sec-title { margin: 4px 0 -4px; }
+#pjWrapper .tsb-main .pj-calendar-form > .tsb-f-captcha .row { flex-wrap: nowrap; }
+#pjWrapper .tsb-main .pj-calendar-form > .tsb-f-terms { margin-top: -2px; }
+@container tsbmain (min-width: 500px) {
+	#pjWrapper .tsb-main .pj-calendar-form > .tsb-f-name, #pjWrapper .tsb-main .pj-calendar-form > .tsb-f-email, #pjWrapper .tsb-main .pj-calendar-form > .tsb-f-phone,
+	#pjWrapper .tsb-main .pj-calendar-form > .tsb-f-country, #pjWrapper .tsb-main .pj-calendar-form > .tsb-f-state, #pjWrapper .tsb-main .pj-calendar-form > .tsb-f-city,
+	#pjWrapper .tsb-main .pj-calendar-form > .tsb-f-addr1, #pjWrapper .tsb-main .pj-calendar-form > .tsb-f-addr2, #pjWrapper .tsb-main .pj-calendar-form > .tsb-f-zip,
+	#pjWrapper .tsb-main .pj-calendar-form > .tsb-f-pay { grid-column: span 2; }
+	#pjWrapper .tsb-main .pj-calendar-form > .tsb-f-captcha { grid-column: span 4; }
+}
+/* tighter order summary + voucher on the checkout / confirm steps */
+#pjWrapper .tsb-aside .pj-calendar-booking-summary li { padding: 6px 0; font-size: 14px; }
+#pjWrapper .tsb-aside .pj-calendar-booking-summary li:nth-last-child(2) strong { font-size: 17px; }
+#pjWrapper .tsb-aside #pjTsBookingSummaryBox .pj-calendar-booking-summary li:last-child { padding: 8px 12px; margin-top: 4px; }
+#pjWrapper .tsb-aside .panel-body { padding: 6px 18px 12px; }
+#pjWrapper .tsb-aside .tsb-cart-list li { padding: 8px 12px; margin-bottom: 6px; }
+#pjWrapper .tsb-voucher .panel-heading { display: none; }
+#pjWrapper .tsb-voucher .panel-body { padding: 12px 18px 14px; }
+#pjWrapper .tsb-voucher .pj-calendar-form { gap: 6px; }
+/* confirm step: read-only values, small caps labels */
+#pjWrapper .pjTsSelectorPreviewForm .pj-calendar-form { gap: 10px 14px; }
+#pjWrapper .pjTsSelectorPreviewForm .pj-calendar-form .control-label { font-size: 11.5px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--tsb-muted); }
+#pjWrapper .pjTsSelectorPreviewForm .pj-calendar-form .control-label span { display: none; }
+#pjWrapper .pjTsSelectorPreviewForm .form-control-static { font-size: 14.5px; line-height: 1.35; }
+#pjWrapper .pjTsSelectorPreviewForm .pj-calendar-form > .tsb-wide[style*="none"] { display: none; }
+#pjWrapper .tsb-lead { margin-bottom: 12px; font-size: 14px; }
+
+/* ---------- checkout + confirm: form beside a sticky order summary ---------- */
+#pjWrapper .tsb-co { display: grid; grid-template-columns: minmax(0, 1fr) 310px; grid-template-areas: "voucher aside" "main aside"; gap: 0 16px; align-items: start; }
+#pjWrapper .tsb-co > .tsb-voucher { grid-area: voucher; }
+#pjWrapper .tsb-co > .tsb-aside { grid-area: aside; position: sticky; top: 12px; container-type: inline-size; container-name: tsbaside; min-width: 0; }
+#pjWrapper .tsb-co > .tsb-main { grid-area: main; min-width: 0; }
+#pjWrapper .tsb-co:not(:has(> .tsb-voucher)) { grid-template-areas: "main aside"; }
+#pjWrapper .tsb-aside > .panel:first-child { margin-bottom: 0; border-bottom-left-radius: 0; border-bottom-right-radius: 0; box-shadow: none; }
+#pjWrapper .tsb-aside > .panel + .panel, #pjWrapper .tsb-aside #pjTsBookingSummaryBox > .panel { margin-top: 0; border-top: 0; border-top-left-radius: 0; border-top-right-radius: 0; }
+#pjWrapper .tsb-aside #pjTsBookingSummaryBox > .panel .panel-heading { padding-top: 6px; }
+#pjWrapper .tsb-aside .panel-body { padding: 8px 18px 14px; }
+#pjWrapper .tsb-voucher .panel-body { padding: 14px 22px; }
+#pjWrapper .tsb-voucher .pj-calendar-form { grid-template-columns: 1fr; }
+#pjWrapper .tsb-voucher .alert:empty { display: none; }
+
+/* order-summary rows are narrow: show them as compact two-line cards */
+@container tsbaside (max-width: 360px) {
+	#pjWrapper .tsb-cart-list li:first-child { display: none; }
+	#pjWrapper .tsb-cart-list li { grid-template-columns: auto auto 1fr auto; grid-template-areas: "d d d q" "s e . p"; column-gap: 4px; row-gap: 2px; padding: 10px 12px; }
+	#pjWrapper .tsb-cart-list li:has(> div:nth-child(5):not([style*="none"])) { grid-template-columns: auto auto 1fr auto; }
+	#pjWrapper .tsb-cart-list li > div:nth-child(1) { grid-area: d; font-size: 13px; color: var(--tsb-muted); font-weight: 600; }
+	#pjWrapper .tsb-cart-list li > div:nth-child(2) { grid-area: s; }
+	#pjWrapper .tsb-cart-list li > div:nth-child(2) span:after { content: " \2013"; }
+	#pjWrapper .tsb-cart-list li > div:nth-child(3) { grid-area: e; }
+	#pjWrapper .tsb-cart-list li > div:nth-child(4) { grid-area: p; text-align: right; white-space: nowrap; }
+	#pjWrapper .tsb-cart-list li > div:nth-child(5) { grid-area: q; text-align: right; font-size: 13px; color: var(--tsb-muted); white-space: nowrap; }
+	#pjWrapper .tsb-cart-list li > div:nth-child(5) > span:first-child:before { content: "\00d7\00a0"; }
+	#pjWrapper .tsb-cart-list li > div:nth-child(5):not(:has(> span)):before { content: "\00d7\00a0"; }
+}
+
+/* ---------- final message ---------- */
+#pjWrapper .panel-body > p.alert-success { display: block; position: relative; margin: 0; padding: 74px 20px 20px; text-align: center; font-size: 15px; font-weight: 500; line-height: 1.6; }
+#pjWrapper .panel-body > p.alert-success:before { content: "\2713"; position: absolute; top: 14px; left: 50%; margin-left: -28px; width: 56px; height: 56px; border-radius: 50%; background: var(--tsb-success); color: #fff; font-size: 28px; line-height: 56px; }
+
+/* ---------- responsive: container queries (work inside any embed width) ---------- */
+@container tsb (max-width: 760px) {
+	#pjWrapper .tsb-co { grid-template-columns: 1fr; grid-template-areas: "voucher" "aside" "main"; }
+	#pjWrapper .tsb-co:not(:has(> .tsb-voucher)) { grid-template-areas: "aside" "main"; }
+	#pjWrapper .tsb-co > .tsb-aside { position: static; }
+}
+@container tsb (max-width: 560px) {
+	#pjWrapper .pj-calendar-form { grid-template-columns: 1fr; }
+	#pjWrapper .pj-calendar-day p { height: auto; aspect-ratio: 1 / 1; min-height: 40px; font-size: 14px; }
+	#pjWrapper .pj-calendar-actions, #pjWrapper .pj-calendar-head, #pjWrapper .pj-calendar-body { padding-left: 10px; padding-right: 10px; }
+	#pjWrapper .pj-calendar-head, #pjWrapper .pj-calendar-body { gap: 4px; }
+	#pjWrapper .pj-calendar-legends { padding: 12px 14px; }
+	#pjWrapper .panel-primary .panel-body, #pjWrapper .panel .panel-body, #pjWrapper .panel-heading, #pjWrapper .panel-footer, #pjWrapper .pj-calendar-footer { padding-left: 14px; padding-right: 14px; }
+	#pjWrapper .panel-footer .btn, #pjWrapper .pj-calendar-footer .btn { flex: 1 1 100%; }
+	#pjWrapper .pj-calendar-footer p { order: -1; flex: 1 1 100%; }
+	#pjWrapper .pj-calendar-footer .btn-default { order: 2; }
+	#pjWrapper .tsb-steps li:not(.cur) .l { display: none; }
+	/* slot rows become compact cards: time range on top, status + price below */
+	#pjWrapper .pj-calendar-view-body { padding-left: 10px; padding-right: 10px; }
+	#pjWrapper .tooltip-view-table li:first-child { display: none; }
+	#pjWrapper .pj-calendar-view-body .tooltip-view-table li, #pjWrapper .pj-calendar-view-body .tooltip-view-table li:has(> div:nth-child(5):not([style*="none"])) { grid-template-columns: auto auto 1fr auto; grid-template-areas: "s e . p" "st st sl sl"; row-gap: 8px; }
+	#pjWrapper .pj-calendar-view-body .tooltip-view-table li > div:nth-child(1) { grid-area: s; }
+	#pjWrapper .pj-calendar-view-body .tooltip-view-table li > div:nth-child(2) { grid-area: e; }
+	#pjWrapper .pj-calendar-view-body .tooltip-view-table li > div:nth-child(2):before { content: "\2013"; margin-right: 8px; color: var(--tsb-muted); }
+	#pjWrapper .pj-calendar-view-body .tooltip-view-table li > div:nth-child(3) { grid-area: st; }
+	#pjWrapper .pj-calendar-view-body .tooltip-view-table li > div:nth-child(4) { grid-area: p; }
+	#pjWrapper .pj-calendar-view-body .tooltip-view-table li > div:nth-child(5) { grid-area: sl; text-align: right; }
+	/* cart: date on top, "start - end" and price below, quantity + remove button at the right of the date */
+	#pjWrapper .tsb-cart-list li, #pjWrapper .tsb-cart-list li:has(> div:nth-child(5):not([style*="none"])) { grid-template-columns: auto auto 1fr auto; grid-template-areas: "d d d q" "s e . p"; column-gap: 4px; row-gap: 4px; padding: 10px 12px; }
+	#pjWrapper .tsb-cart-list li > div:nth-child(1) { grid-area: d; font-size: 13px; color: var(--tsb-muted); font-weight: 600; align-self: center; }
+	#pjWrapper .tsb-cart-list li > div:nth-child(2) { grid-area: s; }
+	#pjWrapper .tsb-cart-list li > div:nth-child(2) span:after { content: " \2013"; }
+	#pjWrapper .tsb-cart-list li > div:nth-child(3) { grid-area: e; }
+	#pjWrapper .tsb-cart-list li > div:nth-child(4) { grid-area: p; text-align: right; white-space: nowrap; align-self: center; }
+	#pjWrapper .tsb-cart-list li > div:nth-child(5) { grid-area: q; display: flex; align-items: center; justify-content: flex-end; gap: 8px; font-size: 13px; color: var(--tsb-muted); white-space: nowrap; }
+	#pjWrapper .tsb-cart-list li > div:nth-child(5) > span:first-child:before { content: "\00d7\00a0"; }
+	#pjWrapper .tsb-cart-list li > div:nth-child(5):not(:has(> span)):before { content: "\00d7\00a0"; }
+	/* weekly: fade at the right edge hints that the grid scrolls sideways */
+	#pjWrapper .pjTsWeeklyViewBody { background: linear-gradient(to right, var(--tsb-surface) 30%, transparent) left center / 30px 100% no-repeat local, linear-gradient(to left, var(--tsb-surface) 30%, transparent) right center / 30px 100% no-repeat local, linear-gradient(to left, rgba(0, 0, 0, .14), transparent) right center / 14px 100% no-repeat scroll; }
+}
+@container tsb (max-width: 380px) {
+	#pjWrapper .pj-calendar-ym, #pjWrapper .pj-calendar-d { font-size: 18px; }
+	#pjWrapper .pj-calendar-legends .legend { font-size: 12px; }
+}
+@media (prefers-reduced-motion: reduce) { #pjWrapper * { transition: none !important; } }

@@ -1,0 +1,15 @@
+#pjWrapper .btn-primary { color: #fff; background-color: #1ca76c; border-color: #12965c; }
+
+#pjWrapper .btn-primary:active,
+#pjWrapper .btn-primary:focus,
+#pjWrapper .btn-primary:active:hover,
+#pjWrapper .btn-primary:active:focus,
+#pjWrapper .btn-primary:hover { color: #fff; background-color: #12965c; border-color: #12965c;}
+
+.pj-calendar-ym,
+#pjWrapper .tsServiceLink,
+#pjWrapper .panel-heading { color: #1ca76c; }  
+
+#pjWrapper .pj-calendar .pjTsLanguage ul li a:hover,
+#pjWrapper .pj-calendar .pjTsLanguage ul li a:focus,
+#pjWrapper .pj-calendar .pjTsLanguage .pjTsBtnActive { background: #1ca76c; color: #fff; }
