@@ -973,12 +973,12 @@ class pjFrontEnd extends pjFront
 	    $this->setAjax(true);
 	    if($this->isXHR())
 	    {
-	        if($this->_get->check('voucher_code') && !$this->_get->isEmpty('voucher_code'))
+	        if($this->_get->check('voucher_code') && trim((string) $this->_get->toString('voucher_code')) !== '')
 	        {
 	            $pjVoucherModel = pjVoucherModel::factory();
 	            $voucher_item = NULL;
 	            $voucher_data = array();
-	            $voucher_code = $this->_get->toString('voucher_code');
+	            $voucher_code = trim((string) $this->_get->toString('voucher_code'));
 	            $cart_arr = $this->getCart($this->_get->toInt('cid'));
 	            foreach ($cart_arr as $cid => $date_arr)
 	            {

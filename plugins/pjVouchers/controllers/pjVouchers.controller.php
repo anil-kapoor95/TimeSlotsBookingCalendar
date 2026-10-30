@@ -12,12 +12,13 @@ class pjVouchers extends pjVouchersAppController
 
 		if ($this->isXHR())
 		{
-			if (!$this->_get->toString('code'))
+			$code = trim((string) $this->_get->toString('code'));
+			if ($code === '')
 			{
 				echo 'false';
 				exit;
 			}
-			$pjVoucherModel = pjVoucherModel::factory()->where('t1.code', $this->_get->toString('code'));
+			$pjVoucherModel = pjVoucherModel::factory()->where('t1.code', $code);
 			if ($this->_get->toInt('id'))
 			{
 				$pjVoucherModel->where('t1.id !=', $this->_get->toInt('id'));
@@ -58,6 +59,12 @@ class pjVouchers extends pjVouchersAppController
 
 		if ($this->_post->check('voucher_create'))
 		{
+			$this->trimPostedValues();
+			if (trim((string) $this->_post->toString('code')) === '' || trim((string) $this->_post->toString('discount')) === '')
+			{
+				// voucher code or discount is blank (or only spaces)
+				pjUtil::redirect($_SERVER['PHP_SELF'] . "?controller=pjVouchers&action=pjActionIndex&err=AV09");
+			}
 			$data = array();
 
 			$data['code'] = $this->_post->toString('code');
@@ -290,10 +297,17 @@ class pjVouchers extends pjVouchersAppController
 			self::jsonResponse(array('status' => 'ERR', 'code' => 102, 'text' => 'Access denied.'));
 		}
 		
+		$this->trimPostedValues();
+		
 		$arr = pjVoucherModel::factory()->find($this->_get->toInt('id'))->getData();
 		if (!$arr)
 		{
 			self::jsonResponse(array('status' => 'ERR', 'code' => 103, 'text' => 'Voucher not found.'));
+		}
+		
+		if (in_array($this->_post->toString('column'), array('code', 'discount')) && trim((string) $this->_post->toString('value')) === '')
+		{
+			self::jsonResponse(array('status' => 'ERR', 'code' => 105, 'text' => 'This field is required.'));
 		}
 		
 		if ($this->_post->toString('column') == 'discount' && $arr['type'] == 'percent' && $this->_post->toFloat('value') > 100)
@@ -316,6 +330,12 @@ class pjVouchers extends pjVouchersAppController
 
 		if ($this->_post->check('voucher_update'))
 		{
+			$this->trimPostedValues();
+			if (trim((string) $this->_post->toString('code')) === '' || trim((string) $this->_post->toString('discount')) === '')
+			{
+				// voucher code or discount is blank (or only spaces)
+				pjUtil::redirect(PJ_INSTALL_URL . "index.php?controller=pjVouchers&action=pjActionIndex&err=AV09");
+			}
 			$data = array();
 			$data['code'] = $this->_post->toString('code');
 			$data['discount'] = $this->_post->toString('discount');

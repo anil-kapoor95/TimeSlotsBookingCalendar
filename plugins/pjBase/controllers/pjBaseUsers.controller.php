@@ -126,6 +126,28 @@ class pjBaseUsers extends pjBase
 		exit;
 	}
 	
+	/**
+	 * Name and e-mail (and the password when a user is created) are required;
+	 * a value made only of spaces is treated as empty.
+	 */
+	private function hasRequiredUserFields($needs_password)
+	{
+		$fields = array('name', 'email');
+		if ($needs_password)
+		{
+			$fields[] = 'password';
+		}
+		foreach ($fields as $field)
+		{
+			$v = $this->_post->toString($field);
+			if ($v === false || trim((string) $v) === '')
+			{
+				return false;
+			}
+		}
+		return true;
+	}
+	
 	public function pjActionCreate()
 	{
 		$this->checkLogin();
@@ -137,6 +159,11 @@ class pjBaseUsers extends pjBase
 		
 		if (self::isPost() && $this->_post->toInt('user_create'))
 		{
+			if (!$this->hasRequiredUserFields(true))
+			{
+				// name, e-mail or password is blank (or only spaces)
+				pjUtil::redirect($_SERVER['PHP_SELF'] . "?controller=pjBaseUsers&action=pjActionIndex&err=PU09");
+			}
 			$data = array();
 			$data['status'] = $this->_post->check('status') ? 'T': 'F';
 			$data['role_id'] = $this->_post->toInt('role_id');
@@ -163,6 +190,11 @@ class pjBaseUsers extends pjBase
 		
 		if (self::isPost() && $this->_post->toInt('user_update') && $this->_post->toInt('id'))
 		{
+			if (!$this->hasRequiredUserFields(false))
+			{
+				// name or e-mail is blank (or only spaces)
+				pjUtil::redirect(PJ_INSTALL_URL . "index.php?controller=pjBaseUsers&action=pjActionIndex&err=PU09");
+			}
 		    $post = $this->_post->raw();
 			$data = array();
 			$data['id'] = $this->_post->toInt('id');
@@ -320,6 +352,11 @@ class pjBaseUsers extends pjBase
 		if ($params['column'] == 'status' && !pjAuth::factory('pjBaseUsers')->hasAccess())
 		{
 			self::jsonResponse(array('status' => 'ERR', 'code' => 103, 'text' => 'Access denied.'));
+		}
+		
+		if (in_array($params['column'], array('name', 'email')) && trim((string) $params['value']) === '')
+		{
+			self::jsonResponse(array('status' => 'ERR', 'code' => 106, 'text' => 'This field is required.'));
 		}
 		
 		if ($params['column'] == 'email')

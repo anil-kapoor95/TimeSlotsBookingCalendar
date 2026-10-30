@@ -264,6 +264,7 @@ class pjAppController extends pjBaseAppController
 	public function beforeFilter()
 	{
 	    parent::beforeFilter();
+	    $this->trimPostedValues();
 	    
 	    if(!in_array($this->_get->toString('controller'), array('pjFront', 'pjInstaller')))
 	    {
@@ -310,6 +311,101 @@ class pjAppController extends pjBaseAppController
 	    
 	    return true;
 	}
+	
+	/**
+	 * Removes leading/trailing white space from every submitted text value, so a value made only of
+	 * spaces/tabs/new lines becomes empty and is caught by the normal "required" checks.
+	 * Passwords and tokens are never touched.
+	 */
+	protected function trimPostedValues()
+	{
+	    // The framework keeps the real request data in the protected "_pj_post" array of $this->_post
+	    // (the global $_POST is blanked by it), so that is the copy which has to be cleaned.
+	    if (!is_object($this->_post) || !isset($_SERVER['REQUEST_METHOD']) || $_SERVER['REQUEST_METHOD'] !== 'POST')
+	    {
+	        return;
+	    }
+	    try {
+	        $prop = new ReflectionProperty($this->_post, '_pj_post');
+	        $prop->setAccessible(true);
+	        $data = $prop->getValue($this->_post);
+	        if (is_array($data) && !empty($data))
+	        {
+	            $prop->setValue($this->_post, self::trimDeep($data, ''));
+	        }
+	    } catch (Exception $e) {
+	        // leave the request untouched if the framework layout is different
+	    }
+	}
+	
+	protected static function trimDeep($value, $key)
+	{
+	    if (is_array($value))
+	    {
+	        foreach ($value as $k => $v)
+	        {
+	            $value[$k] = self::trimDeep($v, (string) $k);
+	        }
+	        return $value;
+	    }
+	    if (is_string($value) && !preg_match('/pass|token|secret|captcha/i', (string) $key))
+	    {
+	        $out = @preg_replace('/^[\\s\\x{00A0}\\x{200B}\\x{FEFF}]+|[\\s\\x{00A0}\\x{200B}\\x{FEFF}]+$/u', '', $value);
+	        return $out === null ? trim($value) : trim($out);
+	    }
+	    return $value;
+	}
+	
+	/**
+	 * True when at least one language holds a non-blank value for $field (server-side safety net:
+	 * the form itself already requires the default language).
+	 */
+	protected static function i18nFilled($i18n_arr, $field)
+	{
+	    if (!is_array($i18n_arr))
+	    {
+	        return false;
+	    }
+	    foreach ($i18n_arr as $row)
+	    {
+	        if (is_array($row) && isset($row[$field]) && is_string($row[$field]) && trim($row[$field]) !== '')
+	        {
+	            return true;
+	        }
+	    }
+	    return false;
+	}
+	
+	/**
+	 * Customer fields that Options > Booking form marks as "required" (value 3) but arrived empty/blank.
+	 * Returns the list of field names.
+	 */
+	protected function missingRequiredCustomerFields($option_arr = null)
+	{
+	    $missing = array();
+	    if (!is_array($option_arr))
+	    {
+	        $option_arr = $this->option_arr;
+	    }
+	    $map = array(
+	        'name' => 'customer_name', 'email' => 'customer_email', 'phone' => 'customer_phone',
+	        'address_1' => 'customer_address_1', 'address_2' => 'customer_address_2', 'city' => 'customer_city',
+	        'state' => 'customer_state', 'zip' => 'customer_zip', 'country' => 'customer_country', 'notes' => 'customer_notes'
+	    );
+	    foreach ($map as $opt => $field)
+	    {
+	        if (isset($option_arr['o_bf_' . $opt]) && (int) $option_arr['o_bf_' . $opt] === 3)
+	        {
+	            $v = $this->_post->toString($field);
+	            if ($v === false || trim((string) $v) === '')
+	            {
+	                $missing[] = $opt;
+	            }
+	        }
+	    }
+	    return $missing;
+	}
+	
 	public function afterFilter()
 	{
 	    parent::afterFilter();

@@ -30,6 +30,22 @@ class pjAdminClients extends pjAdmin
 		exit;
 	}
 	
+	/**
+	 * Name, e-mail and password are required; a value made only of spaces is treated as empty.
+	 */
+	private function hasRequiredClientFields()
+	{
+	    foreach (array('customer_name', 'customer_email', 'customer_password') as $field)
+	    {
+	        $v = $this->_post->toString($field);
+	        if ($v === false || trim((string) $v) === '')
+	        {
+	            return false;
+	        }
+	    }
+	    return true;
+	}
+	
 	public function pjActionCreate()
 	{
 	    $this->checkLogin();
@@ -40,6 +56,11 @@ class pjAdminClients extends pjAdmin
 	    }
 	    if (self::isPost() && $this->_post->toInt('client_create'))
 	    {
+	        if (!$this->hasRequiredClientFields())
+	        {
+	            // name, e-mail or password is blank (or only spaces)
+	            pjUtil::redirect($_SERVER['PHP_SELF'] . "?controller=pjAdminClients&action=pjActionIndex&err=ACL09");
+	        }
 	        $post = $this->_post->raw();
 	        if($this->_post->check('status'))
 	        {
@@ -265,6 +286,10 @@ class pjAdminClients extends pjAdmin
 		{
 		    self::jsonResponse(array('status' => 'ERR', 'code' => 102, 'text' => 'Missing, empty or invalid parameters.'));
 		}
+		if (in_array($params['column'], array('customer_name', 'customer_email')) && trim((string) $params['value']) === '')
+		{
+		    self::jsonResponse(array('status' => 'ERR', 'code' => 104, 'text' => 'This field is required.'));
+		}
 		pjClientModel::factory()->where('id', $params['id'])->limit(1)->modifyAll(array($params['column'] => $params['value']));
 		if(in_array($params['column'], array('status', 'customer_email', 'customer_name', 'customer_phone')))
 		{
@@ -321,6 +346,11 @@ class pjAdminClients extends pjAdmin
 	    }
 	    if (self::isPost() && $this->_post->toInt('client_update') && $this->_post->toInt('id'))
 	    {
+	        if (!$this->hasRequiredClientFields())
+	        {
+	            // name, e-mail or password is blank (or only spaces)
+	            pjUtil::redirect(PJ_INSTALL_URL . "index.php?controller=pjAdminClients&action=pjActionIndex&err=ACL09");
+	        }
 	        $pjClientModel = pjClientModel::factory();
 	        $id = $this->_post->toInt('id');
 	        $post = $this->_post->raw();

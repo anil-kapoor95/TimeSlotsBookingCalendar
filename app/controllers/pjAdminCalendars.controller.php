@@ -17,6 +17,11 @@ class pjAdminCalendars extends pjAdmin
 	    }
 	    if (self::isPost() && $this->_post->check('calendar_create'))
 	    {
+	        if (!self::i18nFilled($this->_post->toI18n('i18n'), 'title'))
+	        {
+	            // calendar title is blank (or only spaces)
+	            pjUtil::redirect($_SERVER['PHP_SELF'] . "?controller=pjAdminCalendars&action=pjActionIndex&err=AC13");
+	        }
 	        $data = array();
 	        $post = $this->_post->raw();
 	        $data = array_merge($post, $data);
@@ -283,6 +288,11 @@ class pjAdminCalendars extends pjAdmin
 		
 	    if (self::isPost() && $this->_post->toInt('calendar_update'))
 	    {
+	        if (!self::i18nFilled($this->_post->toI18n('i18n'), 'title'))
+	        {
+	            // calendar title is blank (or only spaces)
+	            pjUtil::redirect(PJ_INSTALL_URL . "index.php?controller=pjAdminCalendars&action=pjActionIndex&err=AC13");
+	        }
 	        $id = $this->_post->toInt('id');
 	        $data = array();
 	        $post = $this->_post->raw();

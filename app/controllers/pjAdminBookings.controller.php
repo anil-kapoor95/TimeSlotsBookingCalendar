@@ -212,6 +212,12 @@ class pjAdminBookings extends pjAdmin
             {
                 $data['payment_method'] = ':NULL';
             }
+            if($this->_post->check('new_client') && count($this->missingRequiredCustomerFields($option_arr)) > 0)
+            {
+                // a customer field marked as "required" in Options > Booking form is blank (or only spaces)
+                pjUtil::redirect($_SERVER['PHP_SELF'] . "?controller=pjAdminBookings&action=pjActionIndex&err=ABK15");
+            }
+            
             if($this->_post->check('new_client'))
             {
                 $c_data = array();
@@ -730,6 +736,12 @@ class pjAdminBookings extends pjAdmin
             if ($isPaymentDisabled)
             {
                 $data['payment_method'] = ':NULL';
+            }
+            
+            if($this->_post->check('new_client') && count($this->missingRequiredCustomerFields($option_arr)) > 0)
+            {
+                // a customer field marked as "required" in Options > Booking form is blank (or only spaces)
+                pjUtil::redirect($_SERVER['PHP_SELF'] . "?controller=pjAdminBookings&action=pjActionIndex&err=ABK15");
             }
             
             if($this->_post->check('new_client'))

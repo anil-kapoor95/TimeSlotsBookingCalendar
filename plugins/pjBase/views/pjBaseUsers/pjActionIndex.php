@@ -28,7 +28,7 @@
     			</div>
     			<?php 
     			break;
-            case in_array($error_code, array('PU04', 'PU08')):	
+            case in_array($error_code, array('PU04', 'PU08', 'PU09')):	
     			?>
     			<div class="alert alert-danger">
     				<i class="fa fa-exclamation-triangle m-r-xs"></i>
