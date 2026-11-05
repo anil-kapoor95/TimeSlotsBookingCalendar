@@ -364,3 +364,8 @@
 @media (max-width: 620px){
 	.pj-calendar-cell.pj-cell-ampm {min-height: 72px;}
 }
+
+/* voucher box states + weekly custom-day note */
+.pj-calendar-form input.pjTsInvalid { border-color: #a94442; }
+.pj-calendar-form input.pjTsLocked { cursor: not-allowed; }
+.pj-calendar-column .pj-rowspan-icon { display: none; }

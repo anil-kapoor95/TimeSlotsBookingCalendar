@@ -263,7 +263,19 @@
         						{
         							?>
         							<div class="pj-calendar-column">
-        								<div class="pj-calendar-rowspan"><?php __('front_custom_wtime');?><br/><br/><a href="#" class="pjTsCalendarDate" data-iso="<?php echo $iso_date;?>" data-custom="1"><?php __('front_view_slots');?></a></div>
+        								<?php
+        								if($iso_date < date('Y-m-d'))
+        								{
+        									# Past day: nothing to book, so no note and no "View slots" link
+        									?>
+        									<div class="pj-calendar-rowspan pj-rowspan-past"><?php __('front_cart_passed');?></div>
+        									<?php
+        								}else{
+        									?>
+        									<div class="pj-calendar-rowspan"><span class="pj-rowspan-text"><?php __('front_custom_wtime');?></span><span class="glyphicon glyphicon-info-sign pj-rowspan-icon" title="<?php echo pjSanitize::html(__('front_custom_wtime', true)); ?>"></span><br/><br/><a href="#" class="pjTsCalendarDate" data-iso="<?php echo $iso_date;?>" data-custom="1"><?php __('front_view_slots');?></a></div>
+        									<?php
+        								}
+        								?>
         							</div>
         							<?php
         						}else{

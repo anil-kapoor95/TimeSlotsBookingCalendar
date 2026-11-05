@@ -12,6 +12,11 @@ if(isset($FORM['voucher_item']))
     }
 }
 ?>
+<?php
+$tsb_vt = __('front_voucher_toggle', true);
+if (!is_string($tsb_vt) || $tsb_vt === '' || $tsb_vt === 'front_voucher_toggle') { $tsb_vt = 'Have a voucher code?'; }
+?>
+<a href="#" class="tsb-only pjTsVoucherToggle"><span class="glyphicon glyphicon-tag"></span> <?php echo pjSanitize::html($tsb_vt); ?></a>
 <div class="panel panel-primary">
 	<div class="panel-heading">
 		<?php __('front_voucher'); ?>
@@ -25,7 +30,7 @@ if(isset($FORM['voucher_item']))
 				<div class="col-sm-8">
 					<div class="row form-group">
 						<div class="col-sm-8">
-							<input type="text" id="pjTsVoucherCodeField" name="voucher_code" class="form-control" value="<?php echo isset($FORM['voucher_code']) ? pjSanitize::html($FORM['voucher_code']) : NULL; ?>">
+							<input type="text" id="pjTsVoucherCodeField" name="voucher_code" class="form-control<?php echo $voucher_valid ? ' pjTsLocked' : NULL; ?>"<?php echo $voucher_valid ? ' readonly="readonly"' : NULL; ?> value="<?php echo isset($FORM['voucher_code']) ? pjSanitize::html($FORM['voucher_code']) : NULL; ?>">
 						</div>	
 						<div class="col-sm-4">
 							<a href="#" class="btn btn-primary pull-left pjTsApplyCode" style="display:<?php echo $voucher_valid == false ? '' : 'none';?>;"><?php echo __('front_btn_apply', false, true); ?></a>

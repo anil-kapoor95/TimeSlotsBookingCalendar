@@ -777,7 +777,9 @@ class pjAppController extends pjBaseAppController
 						$qty = $_SESSION['TSBC_Slots'][$cid][$time];
 						$slot_price = pjAppController::getPrices($cid, $wt_arr, $date, $start_ts, $end_ts, $qty);
 						$original_price += $slot_price;
-						if(isset($cart_arr['voucher_data'][$start_ts]))
+						# the discount only counts while a voucher is applied in this form session
+						# (a leftover cart['voucher_data'] from an earlier booking must never discount a new one)
+						if(!empty($_SESSION['TSBC_Form_' . $cid]['voucher_item']) && isset($cart_arr['voucher_data'][$start_ts]))
 						{
 						    $discount_record = $cart_arr['voucher_data'][$start_ts];
 						    if($discount_record['status'] == 'OK' && isset($discount_record['arr']))

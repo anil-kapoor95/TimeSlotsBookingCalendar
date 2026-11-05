@@ -805,6 +805,9 @@ class pjFrontEnd extends pjFront
 			
 			$_SESSION[$this->defaultCart][$cid] = NULL;
 			unset($_SESSION[$this->defaultCart][$cid]);
+			# the applied voucher belongs to the finished booking: drop it, otherwise the cart is never "empty"
+			# and the next booking for the same time slot would get the discount without any code entered
+			unset($_SESSION[$this->defaultCart]['voucher_data']);
 			if(empty($_SESSION[$this->defaultCart]))
 			{
 			    $_SESSION[$this->defaultCart] = NULL;

@@ -9,7 +9,8 @@ if (isset($tpl['status']) && $tpl['status'] == 'OK')
 	<?php
 	if ((int) $tpl['option_arr']['o_disable_payments'] === 0 && (int) $tpl['option_arr']['o_hide_prices'] === 0 && isset($tpl['amount']) && $tpl['amount']['deposit'] > 0)
 	{
-		?><div class="tsb-voucher"><?php
+		$tsb_voucher_open = !empty($_SESSION[$controller->defaultForm . '_' . $controller->_get->toInt('cid')]['voucher_item']);
+		?><div class="tsb-voucher<?php echo $tsb_voucher_open ? '' : ' tsb-collapsed'; ?>"><?php
 		include PJ_VIEWS_PATH . 'pjFrontPublic/elements/voucher.php';
 		?></div><?php
 	}
@@ -50,7 +51,7 @@ if (isset($tpl['status']) && $tpl['status'] == 'OK')
 							<label class="col-sm-4 control-label"><?php __('opt_o_bf_name'); ?><?php if ((int) $tpl['option_arr']['o_bf_name'] === 3) : ?><span class="tsAsterisk">*</span><?php endif; ?></label><!-- /.col-sm-4 -->
 		
 							<div class="col-sm-8">
-								<input type="text" name="customer_name" class="form-control<?php echo $tpl['option_arr']['o_bf_name'] == 3 ? ' required' : NULL; ?>" value="<?php echo isset($FORM['customer_name']) ? pjSanitize::html($FORM['customer_name']) : NULL; ?>" data-msg-required="<?php echo pjSanitize::html(__('front_v_name', false)); ?>">
+								<input type="text" name="customer_name" autocomplete="name" class="form-control<?php echo $tpl['option_arr']['o_bf_name'] == 3 ? ' required' : NULL; ?>" value="<?php echo isset($FORM['customer_name']) ? pjSanitize::html($FORM['customer_name']) : NULL; ?>" data-msg-required="<?php echo pjSanitize::html(__('front_v_name', false)); ?>">
 								<div class="help-block with-errors"><ul class="list-unstyled"></ul></div>
 							</div><!-- /.col-sm-8 -->
 						</div><!-- /.row -->
@@ -64,7 +65,7 @@ if (isset($tpl['status']) && $tpl['status'] == 'OK')
 							<label class="col-sm-4 control-label"><?php __('opt_o_bf_email'); ?><?php if ((int) $tpl['option_arr']['o_bf_email'] === 3) : ?><span class="tsAsterisk">*</span><?php endif; ?></label><!-- /.col-sm-4 -->
 		
 							<div class="col-sm-8">
-								<input type="text" name="customer_email" class="form-control email<?php echo $tpl['option_arr']['o_bf_email'] == 3 ? ' required' : NULL; ?>" value="<?php echo isset($FORM['customer_email']) ? pjSanitize::html($FORM['customer_email']) : NULL; ?>" data-msg-required="<?php echo pjSanitize::html(__('front_v_email', false)); ?>" data-msg-email="<?php echo pjSanitize::html(__('front_v_email_format', false)); ?>" />
+								<input type="text" name="customer_email" inputmode="email" autocomplete="email" autocapitalize="off" class="form-control email<?php echo $tpl['option_arr']['o_bf_email'] == 3 ? ' required' : NULL; ?>" value="<?php echo isset($FORM['customer_email']) ? pjSanitize::html($FORM['customer_email']) : NULL; ?>" data-msg-required="<?php echo pjSanitize::html(__('front_v_email', false)); ?>" data-msg-email="<?php echo pjSanitize::html(__('front_v_email_format', false)); ?>" />
 								<div class="help-block with-errors"><ul class="list-unstyled"></ul></div>
 							</div><!-- /.col-sm-8 -->
 						</div><!-- /.row -->
@@ -78,7 +79,7 @@ if (isset($tpl['status']) && $tpl['status'] == 'OK')
 							<label class="col-sm-4 control-label"><?php __('opt_o_bf_phone'); ?><?php if ((int) $tpl['option_arr']['o_bf_phone'] === 3) : ?><span class="tsAsterisk">*</span><?php endif; ?></label><!-- /.col-sm-4 -->
 		
 							<div class="col-sm-8">
-								<input type="text" name="customer_phone" class="form-control<?php echo $tpl['option_arr']['o_bf_phone'] == 3 ? ' required' : NULL; ?>" value="<?php echo isset($FORM['customer_phone']) ? pjSanitize::html($FORM['customer_phone']) : NULL; ?>" data-msg-required="<?php echo pjSanitize::html(__('front_v_phone', false)); ?>" />
+								<input type="tel" name="customer_phone" autocomplete="tel" class="form-control<?php echo $tpl['option_arr']['o_bf_phone'] == 3 ? ' required' : NULL; ?>" value="<?php echo isset($FORM['customer_phone']) ? pjSanitize::html($FORM['customer_phone']) : NULL; ?>" data-msg-required="<?php echo pjSanitize::html(__('front_v_phone', false)); ?>" />
 								<div class="help-block with-errors"><ul class="list-unstyled"></ul></div>
 							</div><!-- /.col-sm-8 -->
 						</div><!-- /.row -->
@@ -117,7 +118,7 @@ if (isset($tpl['status']) && $tpl['status'] == 'OK')
 							<label class="col-sm-4 control-label"><?php __('opt_o_bf_state'); ?><?php if ((int) $tpl['option_arr']['o_bf_state'] === 3) : ?><span class="tsAsterisk">*</span><?php endif; ?></label><!-- /.col-sm-4 -->
 		
 							<div class="col-sm-8">
-								<input type="text" name="customer_state" class="form-control<?php echo $tpl['option_arr']['o_bf_state'] == 3 ? ' required' : NULL; ?>" value="<?php echo isset($FORM['customer_state']) ? pjSanitize::html($FORM['customer_state']) : NULL; ?>" data-msg-required="<?php echo pjSanitize::html(__('front_v_state', false)); ?>" />
+								<input type="text" name="customer_state" autocomplete="address-level1" class="form-control<?php echo $tpl['option_arr']['o_bf_state'] == 3 ? ' required' : NULL; ?>" value="<?php echo isset($FORM['customer_state']) ? pjSanitize::html($FORM['customer_state']) : NULL; ?>" data-msg-required="<?php echo pjSanitize::html(__('front_v_state', false)); ?>" />
 								<div class="help-block with-errors"><ul class="list-unstyled"></ul></div>
 							</div><!-- /.col-sm-8 -->
 						</div><!-- /.row -->
@@ -132,7 +133,7 @@ if (isset($tpl['status']) && $tpl['status'] == 'OK')
 							
 		
 							<div class="col-sm-8">
-								<input type="text" name="customer_city" class="form-control<?php echo $tpl['option_arr']['o_bf_city'] == 3 ? ' required' : NULL; ?>" value="<?php echo isset($FORM['customer_city']) ? pjSanitize::html($FORM['customer_city']) : NULL; ?>" data-msg-required="<?php echo pjSanitize::html(__('front_v_city', false)); ?>" />
+								<input type="text" name="customer_city" autocomplete="address-level2" class="form-control<?php echo $tpl['option_arr']['o_bf_city'] == 3 ? ' required' : NULL; ?>" value="<?php echo isset($FORM['customer_city']) ? pjSanitize::html($FORM['customer_city']) : NULL; ?>" data-msg-required="<?php echo pjSanitize::html(__('front_v_city', false)); ?>" />
 								<div class="help-block with-errors"><ul class="list-unstyled"></ul></div>
 							</div><!-- /.col-sm-8 -->
 						</div><!-- /.row -->
@@ -146,7 +147,7 @@ if (isset($tpl['status']) && $tpl['status'] == 'OK')
 							<label class="col-sm-4 control-label"><?php __('booking_address_1'); ?><?php if ((int) $tpl['option_arr']['o_bf_address_1'] === 3) : ?><span class="tsAsterisk">*</span><?php endif; ?></label><!-- /.col-sm-4 -->
 		
 							<div class="col-sm-8">
-								<input type="text" name="customer_address_1" class="form-control<?php echo $tpl['option_arr']['o_bf_address_1'] == 3 ? ' required' : NULL; ?>" value="<?php echo isset($FORM['customer_address_1']) ? pjSanitize::html($FORM['customer_address_1']) : NULL; ?>" data-msg-required="<?php echo pjSanitize::html(__('front_v_address_1', false)); ?>" />
+								<input type="text" name="customer_address_1" autocomplete="address-line1" class="form-control<?php echo $tpl['option_arr']['o_bf_address_1'] == 3 ? ' required' : NULL; ?>" value="<?php echo isset($FORM['customer_address_1']) ? pjSanitize::html($FORM['customer_address_1']) : NULL; ?>" data-msg-required="<?php echo pjSanitize::html(__('front_v_address_1', false)); ?>" />
 								<div class="help-block with-errors"><ul class="list-unstyled"></ul></div>
 							</div><!-- /.col-sm-8 -->
 						</div><!-- /.row -->
@@ -160,7 +161,7 @@ if (isset($tpl['status']) && $tpl['status'] == 'OK')
 							<label class="col-sm-4 control-label"><?php __('booking_address_2'); ?><?php if ((int) $tpl['option_arr']['o_bf_address_2'] === 3) : ?><span class="tsAsterisk">*</span><?php endif; ?></label><!-- /.col-sm-4 -->
 		
 							<div class="col-sm-8">
-								<input type="text" name="customer_address_2" class="form-control<?php echo $tpl['option_arr']['o_bf_address_2'] == 3 ? ' required' : NULL; ?>" value="<?php echo isset($FORM['customer_address_2']) ? pjSanitize::html($FORM['customer_address_2']) : NULL; ?>" data-msg-required="<?php echo pjSanitize::html(__('front_v_address_2', false)); ?>" />
+								<input type="text" name="customer_address_2" autocomplete="address-line2" class="form-control<?php echo $tpl['option_arr']['o_bf_address_2'] == 3 ? ' required' : NULL; ?>" value="<?php echo isset($FORM['customer_address_2']) ? pjSanitize::html($FORM['customer_address_2']) : NULL; ?>" data-msg-required="<?php echo pjSanitize::html(__('front_v_address_2', false)); ?>" />
 								<div class="help-block with-errors"><ul class="list-unstyled"></ul></div>
 							</div><!-- /.col-sm-8 -->
 						</div><!-- /.row -->
@@ -174,7 +175,7 @@ if (isset($tpl['status']) && $tpl['status'] == 'OK')
 							<label class="col-sm-4 control-label"><?php __('opt_o_bf_zip'); ?><?php if ((int) $tpl['option_arr']['o_bf_zip'] === 3) : ?><span class="tsAsterisk">*</span><?php endif; ?></label><!-- /.col-sm-4 -->
 		
 							<div class="col-sm-8">
-								<input type="text" name="customer_zip" class="form-control<?php echo $tpl['option_arr']['o_bf_zip'] == 3 ? ' required' : NULL; ?>" value="<?php echo isset($FORM['customer_zip']) ? pjSanitize::html($FORM['customer_zip']) : NULL; ?>" data-msg-required="<?php echo pjSanitize::html(__('front_v_zip', false)); ?>" />
+								<input type="text" name="customer_zip" autocomplete="postal-code" class="form-control<?php echo $tpl['option_arr']['o_bf_zip'] == 3 ? ' required' : NULL; ?>" value="<?php echo isset($FORM['customer_zip']) ? pjSanitize::html($FORM['customer_zip']) : NULL; ?>" data-msg-required="<?php echo pjSanitize::html(__('front_v_zip', false)); ?>" />
 								<div class="help-block with-errors"><ul class="list-unstyled"></ul></div>
 							</div><!-- /.col-sm-8 -->
 						</div><!-- /.row -->
@@ -400,7 +401,7 @@ if (isset($tpl['status']) && $tpl['status'] == 'OK')
 							<div class="col-md-12 col-sm-12 col-xs-12">
 							  	<div class="form-group required">
 							    	<label class="control-label"><?php __('opt_o_bf_email'); ?><span class="tsAsterisk">*</span></label>
-							    	<input type="text" name="login_email" class="form-control email required" data-msg-required="<?php echo pjSanitize::html(__('front_v_email', false)); ?>" data-msg-email="<?php echo pjSanitize::html(__('front_v_email_format', false)); ?>" />
+							    	<input type="text" name="login_email" inputmode="email" autocomplete="username" autocapitalize="off" class="form-control email required" data-msg-required="<?php echo pjSanitize::html(__('front_v_email', false)); ?>" data-msg-email="<?php echo pjSanitize::html(__('front_v_email_format', false)); ?>" />
 							    	<div class="help-block with-errors"><ul class="list-unstyled"></ul></div>
 							  	</div>
 							</div>
@@ -410,7 +411,7 @@ if (isset($tpl['status']) && $tpl['status'] == 'OK')
 							<div class="col-md-12 col-sm-12 col-xs-12">
 							  	<div class="form-group required">
 							    	<label class="control-label"><?php __('front_password'); ?><span class="tsAsterisk">*</span></label>
-							    	<input type="password" name="login_password" class="form-control required" data-msg-required="<?php echo pjSanitize::html(__('front_v_password', false)); ?>" />
+							    	<input type="password" name="login_password" autocomplete="current-password" class="form-control required" data-msg-required="<?php echo pjSanitize::html(__('front_v_password', false)); ?>" />
 							    	<div class="help-block with-errors"><ul class="list-unstyled"></ul></div>
 							  	</div>
 							</div>
@@ -448,7 +449,7 @@ if (isset($tpl['status']) && $tpl['status'] == 'OK')
 							<div class="col-md-12 col-sm-12 col-xs-12">
 							  	<div class="form-group required">
 							    	<label class="control-label"><?php __('opt_o_bf_email'); ?><span class="tsAsterisk">*</span></label>
-							    	<input type="text" name="email" class="form-control email required" data-msg-required="<?php echo pjSanitize::html(__('front_v_email', false)); ?>" data-msg-email="<?php echo pjSanitize::html(__('front_v_email_format', false)); ?>" />
+							    	<input type="text" name="email" inputmode="email" autocomplete="email" autocapitalize="off" class="form-control email required" data-msg-required="<?php echo pjSanitize::html(__('front_v_email', false)); ?>" data-msg-email="<?php echo pjSanitize::html(__('front_v_email_format', false)); ?>" />
 							    	<div class="help-block with-errors"><ul class="list-unstyled"></ul></div>
 							  	</div>
 							</div>

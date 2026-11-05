@@ -428,3 +428,56 @@
 .tooltipster-base .pj-calendar-tooltip label { display: block; float: none; width: auto; padding: 4px 4px 6px; margin: 0; font-size: 13px; font-weight: 700; text-align: center; color: var(--tsb-heading); }
 .tooltipster-base .pj-calendar-tooltip label.tooltip-booked { color: var(--tsb-danger); }
 .tooltipster-base .pj-calendar-tooltip.dayoff label { color: var(--tsb-muted); }
+
+/* voucher box: empty-code error + locked state while a code is applied */
+#pjWrapper .pj-calendar-form input.pjTsInvalid { border-color: var(--tsb-danger); background: var(--tsb-danger-soft); }
+#pjWrapper .pj-calendar-form input.pjTsLocked { background: var(--tsb-surface-2, #f3ece9); color: var(--tsb-muted); cursor: not-allowed; }
+
+/* weekly view: custom-hours note becomes an info icon, past days are dimmed */
+#pjWrapper .pj-calendar-column .pj-rowspan-text { display: none; }
+#pjWrapper .pj-calendar-column .pj-rowspan-icon { display: inline-block; top: 0; color: var(--tsb-muted); font-size: 14px; cursor: help; margin-bottom: 4px; }
+#pjWrapper .pj-calendar-column .pj-rowspan-past { opacity: .55; text-transform: lowercase; }
+
+/* ============ checkout polish: payment row, shorter page, clearer confirm step ============ */
+#pjWrapper .tsb-orig { display: none; }
+
+/* select: keep the text clear of the arrow (the compact rule above had reset the right padding) */
+#pjWrapper .tsb-main select.form-control { padding-right: 38px; text-overflow: ellipsis; white-space: nowrap; }
+
+/* payment method + captcha: half and half, captcha input and image on one line */
+@container tsbmain (min-width: 500px) {
+	#pjWrapper .tsb-main .pj-calendar-form > .tsb-f-pay { grid-column: span 3; }
+	#pjWrapper .tsb-main .pj-calendar-form > .tsb-f-captcha { grid-column: span 3; }
+}
+#pjWrapper .tsb-main .pj-calendar-form > .tsb-f-captcha .row { display: flex; flex-wrap: nowrap; align-items: center; gap: 10px; margin: 0; }
+#pjWrapper .tsb-main .pj-calendar-form > .tsb-f-captcha .row > [class*="col-"] { width: auto; max-width: none; padding: 0; float: none; }
+#pjWrapper .tsb-main .pj-calendar-form > .tsb-f-captcha .row > [class*="col-"]:has(input[name="captcha"]) { flex: 1 1 90px; min-width: 80px; max-width: none; }
+#pjWrapper .tsb-main .pj-calendar-form > .tsb-f-captcha .row > [class*="col-"]:has(img) { flex: 0 0 auto; }
+#pjWrapper .pjTsCaptchaImage { display: block; border-radius: 10px; border: 1px dashed var(--tsb-border); background: var(--tsb-surface); }
+
+/* voucher: one slim link until the visitor opens it (saves ~100px) */
+#pjWrapper .tsb-voucher .pjTsVoucherToggle { display: inline-flex; align-items: center; gap: 8px; margin: 0 4px 12px; font-size: 14px; font-weight: 600; color: var(--tsb-accent); text-decoration: none; }
+#pjWrapper .tsb-voucher .pjTsVoucherToggle .glyphicon { top: 0; }
+#pjWrapper .tsb-voucher .pjTsVoucherToggle:hover { text-decoration: underline; }
+#pjWrapper .tsb-voucher:not(.tsb-collapsed) .pjTsVoucherToggle { display: none; }
+#pjWrapper .tsb-voucher.tsb-collapsed > .panel { display: none; }
+
+/* order summary: two columns when the summary box is wide enough (single column page) */
+@container tsbaside (min-width: 420px) {
+	#pjWrapper .tsb-aside #pjTsBookingSummaryBox .pj-calendar-booking-summary ul { display: grid; grid-template-columns: 1fr 1fr; column-gap: 22px; }
+	#pjWrapper .tsb-aside #pjTsBookingSummaryBox .pj-calendar-booking-summary li:last-child { margin-top: 0; }
+}
+#pjWrapper .tsb-main .panel-body { padding: 14px 20px; }
+#pjWrapper .tsb-main .pj-calendar-form { gap: 10px 14px; }
+#pjWrapper .tsb-main .pj-calendar-form textarea.form-control { height: 54px; }
+
+/* confirm step: a read-only review, not a second form */
+#pjWrapper .tsb-ptitle { display: inline; }
+#pjWrapper .pjTsSelectorPreviewForm .form-control-static { font-weight: 600; font-size: 15px; }
+#pjWrapper .pjTsSelectorPreviewForm .pj-calendar-form .control-label { font-size: 11px; opacity: .85; }
+@container tsbmain (min-width: 500px) {
+	#pjWrapper .pjTsSelectorPreviewForm .pj-calendar-form { grid-template-columns: minmax(0, 1fr) minmax(0, 1.5fr) minmax(0, 1fr); }
+	#pjWrapper .tsb-main .pjTsSelectorPreviewForm .pj-calendar-form > .row { grid-column: span 1; }
+	#pjWrapper .tsb-main .pjTsSelectorPreviewForm .pj-calendar-form > .tsb-wide,
+	#pjWrapper .tsb-main .pjTsSelectorPreviewForm .pj-calendar-form > .tsb-f-notes { grid-column: 1 / -1; }
+}

@@ -10,16 +10,24 @@ if ((int) $tpl['option_arr']['o_disable_payments'] === 0 && (int) $tpl['option_a
 		<div class="panel-body">
 			<div class="pj-calendar-booking-summary">
 				<ul>
-					<li>
-						<span><?php __('front_summary_price'); ?></span>
-	
-						<strong><?php echo pjCurrency::formatPrice($tpl['amount']['original_price']); ?></strong>
-					</li>
-					<li>
-						<span><?php __('front_summary_discount'); ?></span>
-	
-						<strong><?php echo pjCurrency::formatPrice($tpl['amount']['discount']); ?></strong>
-					</li>
+					<?php
+					// Price + Discount rows only when a discount applies (same rule as elements/summary.php on first load)
+					if($tpl['amount']['discount'] > 0)
+					{
+						?>
+						<li>
+							<span><?php __('front_summary_price'); ?></span>
+		
+							<strong><?php echo pjCurrency::formatPrice($tpl['amount']['original_price']); ?></strong>
+						</li>
+						<li>
+							<span><?php __('front_summary_discount'); ?></span>
+		
+							<strong><?php echo pjCurrency::formatPrice($tpl['amount']['discount']); ?></strong>
+						</li>
+						<?php
+					}
+					?>
 					<li>
 						<span><?php __('front_summary_subtotal'); ?></span>
 	

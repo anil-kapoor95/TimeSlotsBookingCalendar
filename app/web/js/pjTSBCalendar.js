@@ -479,8 +479,9 @@
 				if (e && e.preventDefault) {
 					e.preventDefault();
 				}
-				var voucher_code = pjQ.$('#pjTsVoucherCodeField').val();
-				if(voucher_code != '')
+				var voucher_code = pjQ.$.trim(pjQ.$('#pjTsVoucherCodeField').val());
+				pjQ.$('#pjTsVoucherCodeField').removeClass('pjTsInvalid');
+				// An empty code is sent too, so the server answers with its own (editable) "voucher code is empty" message.
 				{
 					pjQ.$.get([self.options.folder, "index.php?controller=pjFrontEnd&action=pjActionApplyCode"].join(""), {
 						"session_id": self.options.session_id,
@@ -493,10 +494,15 @@
 						if(data.status == "OK")
 						{
 							pjQ.$('#pjTsVoucherMessage').html(data.text).addClass('alert-info').show();
+							pjQ.$('#pjTsVoucherCodeField').val(voucher_code).prop('readonly', true).addClass('pjTsLocked');
 							pjQ.$('.pjTsApplyCode').hide();
 							pjQ.$('.pjTsRemoveCode').show();
 						}else{
 							pjQ.$('#pjTsVoucherMessage').html(data.text).addClass('alert-danger').show();
+							if (voucher_code == '')
+							{
+								pjQ.$('#pjTsVoucherCodeField').addClass('pjTsInvalid').trigger('focus');
+							}
 						}
 						self.getSummary.call(self);
 					});
@@ -515,13 +521,20 @@
 						"multi" : self.options.multi,
 						"voucher_code" : voucher_code
 					}).done(function (data) {
-						pjQ.$('#pjTsVoucherCodeField').val("");
+						pjQ.$('#pjTsVoucherCodeField').val("").prop('readonly', false).removeClass('pjTsLocked pjTsInvalid');
 						pjQ.$('#pjTsVoucherMessage').html("").hide();
 						pjQ.$('.pjTsApplyCode').show();
 						pjQ.$('.pjTsRemoveCode').hide();
 						self.getSummary.call(self);
 					});
 				}
+			}).on('click.ts', '.pjTsVoucherToggle', function (e) {
+				if (e && e.preventDefault) {
+					e.preventDefault();
+				}
+				pjQ.$(this).closest('.tsb-voucher').removeClass('tsb-collapsed').find('#pjTsVoucherCodeField').trigger('focus');
+			}).on('input.ts', '#pjTsVoucherCodeField', function () {
+				pjQ.$(this).removeClass('pjTsInvalid');
 			}).on("change.ts", "input[name='customer_email']", function(){
 				var $this = pjQ.$(this);				
 				if($this.val() != '')

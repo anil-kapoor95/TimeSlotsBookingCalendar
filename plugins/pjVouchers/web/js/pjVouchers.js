@@ -348,7 +348,9 @@ var jQuery_1_8_2 = jQuery_1_8_2 || jQuery.noConflict();
 				          {type: "delete", url: "index.php?controller=pjVouchers&action=pjActionDeleteVoucher&id={:id}"}
 				          ],
 				columns: [{text: myLabel.code, type: "text", sortable: true, editable: true},
-				          {text: myLabel.discount, type: "text", sortable: true, editable: true},
+				          {text: myLabel.discount, type: "text", sortable: true, editable: true, renderer: function (val, row) {
+				        	  return row.sign ? val + ' ' + row.sign : val;
+				          }},
 				          {text: myLabel.type, type: "date", sortable: true, editable: false},
 				          {text: myLabel.valid, type: "text", sortable: true, editable: false}],
 				dataUrl: "index.php?controller=pjVouchers&action=pjActionGetVoucher",

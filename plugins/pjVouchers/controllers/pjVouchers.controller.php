@@ -252,8 +252,10 @@ class pjVouchers extends pjVouchersAppController
 			
 			$voucher_types = __('plugin_vouchers_types', true);
 			$vouchers_valids = __('plugin_vouchers_valids', true, false);
+			$currency_sign = pjCurrency::getCurrencySign($this->option_arr['o_currency'], false);
 			foreach($data as $k => $v)
 			{
+			    $data[$k]['sign'] = $v['type'] == 'percent' ? '%' : $currency_sign; # shown after the discount in the grid
 			    $data[$k]['type'] = $voucher_types[$v['type']];
 			    $data[$k]['valid'] = $vouchers_valids[$v['valid']];
 			}

@@ -15,7 +15,7 @@ $get_cid = $controller->_get->toInt('cid');
         			<label class="col-sm-4 control-label"><?php __('opt_o_bf_email'); ?><span class="tsAsterisk">*</span></label><!-- /.col-sm-4 -->
         
         			<div class="col-sm-8">
-        				<input type="text" name="email" class="form-control email required" data-msg-required="<?php echo pjSanitize::html(__('front_v_email', false)); ?>" data-msg-email="<?php echo pjSanitize::html(__('front_v_email_format', false)); ?>" />
+        				<input type="text" name="email" inputmode="email" autocomplete="email" autocapitalize="off" class="form-control email required" data-msg-required="<?php echo pjSanitize::html(__('front_v_email', false)); ?>" data-msg-email="<?php echo pjSanitize::html(__('front_v_email_format', false)); ?>" />
         				<div class="help-block with-errors"><ul class="list-unstyled"></ul></div>
         			</div><!-- /.col-sm-8 -->
         		</div><!-- /.row -->

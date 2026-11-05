@@ -21,7 +21,8 @@ $action_name = $controller->_get->toString('action');
     			<a href="#" class="btn btn-primary pjTsProfile"><span class="glyphicon glyphicon-user"></span> <?php __('front_btn_profile')?></a>
     			<a href="#" class="btn btn-primary pjTsLogout"><span class="glyphicon glyphicon-log-out"></span> <?php __('front_btn_logout')?></a>
     			<?php
-    		}else{
+    		}elseif($action_name != 'pjActionLogin'){
+    			# (no Login button while the login form itself is open)
     			?>
     			<a href="#" class="btn btn-primary pjTsLogin"><span class="glyphicon glyphicon-log-in"></span> <?php __('front_btn_login')?></a>
     			<?php
