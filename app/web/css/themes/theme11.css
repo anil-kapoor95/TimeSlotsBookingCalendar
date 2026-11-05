@@ -47,7 +47,7 @@
 #pjWrapper a { color: var(--tsb-primary); text-decoration: none; }
 #pjWrapper a:hover, #pjWrapper a:focus { color: var(--tsb-primary-hover); text-decoration: none; }
 #pjWrapper .btn:focus-visible, #pjWrapper .form-control:focus-visible, #pjWrapper a:focus-visible, #pjWrapper [tabindex]:focus-visible { outline: 3px solid var(--tsb-primary-ring); outline-offset: 2px; }
-#pjWrapper .glyphicon { top: 2px; }
+#pjWrapper .glyphicon { top: 0; } /* was 2px: it pushed every icon 2px below the centre of its button */
 #pjWrapper .pull-left, #pjWrapper .pull-right { float: none !important; }
 #pjWrapper p { margin: 0 0 10px; }
 .form-control, body #pjWrapper { font-family: var(--tsb-font-body); }
