@@ -526,7 +526,10 @@ class pjFrontEnd extends pjFront
 			if (!empty($theme11_colors))
 			{
 				// Colour / font / shape overrides saved from the admin Preview page (Theme 11 only)
-				echo str_replace('pjWrapper', 'pjWrapperTSBCalendar_' . $this->getCalendarId(), pjAppController::getTheme11CssBlock($theme11_colors));
+				$theme11_block = pjAppController::getTheme11CssBlock($theme11_colors);
+				echo str_replace('pjWrapper', 'pjWrapperTSBCalendar_' . $this->getCalendarId(), $theme11_block);
+				// the day popup (tooltip) is added to <body>, outside the widget: it needs the same colours
+				echo str_replace('#pjWrapper', '.tooltipster-base', $theme11_block);
 			}
 		} else {
 			// Theme 11 adds a few extra elements (progress steps, section titles); the older themes keep their original look

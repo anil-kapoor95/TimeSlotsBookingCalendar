@@ -110,7 +110,8 @@ class pjTSBCalendar extends pjBaseCalendar
 				$CART = $this->cart;
 				
 				$tooltip .= '<div class="pj-calendar-tooltip">';
-				$tooltip .= '<ul>';
+				$tt_rows = array();
+				$tt_free = 0;
 				
 				$slots = $date['t_arr']['slots'];
 				$i = $date['t_arr']['start_ts'];
@@ -209,13 +210,17 @@ class pjTSBCalendar extends pjBaseCalendar
 							}
 						}
 					}
-					$tooltip .= '<li><span class="'.$tooltip_class.'">'.date($this->options['o_time_format'], $i).' - '.date($this->options['o_time_format'], $i+ $step).'</span> <strong class="'.$tooltip_class.'">'.$slot_text.'</strong> <strong class="'.$tooltip_class.'">'.$price.'</strong></li>';
+					if ($state == 1 || $state == 2)
+					{
+						$tt_free++;
+					}
+					$tt_rows[] = '<li><span class="'.$tooltip_class.'">'.date($this->options['o_time_format'], $i).' - '.date($this->options['o_time_format'], $i+ $step).'</span> <strong class="'.$tooltip_class.'">'.$slot_text.'</strong> <strong class="'.$tooltip_class.'">'.$price.'</strong></li>';
 	
 					if($i + $step == $lunch_from_ts)
 					{
 						if($lunch_from_ts < $lunch_to_ts)
 						{
-							$tooltip .= '<li><span class="tooltip-past">'.date($this->options['o_time_format'], $lunch_from_ts).' - '.date($this->options['o_time_format'], $lunch_to_ts).'</span> <strong class="tooltip-past">'. $this->titles['lunch'].'</strong> <strong class="tooltip-past">&nbsp;</strong></li>';
+							$tt_rows[] = '<li><span class="tooltip-past">'.date($this->options['o_time_format'], $lunch_from_ts).' - '.date($this->options['o_time_format'], $lunch_to_ts).'</span> <strong class="tooltip-past">'. $this->titles['lunch'].'</strong> <strong class="tooltip-past">&nbsp;</strong></li>';
 						}
 						$i = $lunch_to_ts;
 					}else{
@@ -223,7 +228,9 @@ class pjTSBCalendar extends pjBaseCalendar
 					}
 				}
 				
-				$tooltip .= '</ul>';
+				// Header used by Theme 11 only (style.css hides it for every other theme): the date and the number of free slots
+				$tooltip .= '<div class="tt-head"><b>' . pjDateTime::formatDate($iso_date, 'Y-m-d', $this->options['o_date_format']) . '</b>' . ($tt_free > 0 ? '<small>' . $tt_free . ' ' . $this->titles['available'] . '</small>' : '') . '</div>';
+				$tooltip .= '<ul>' . join('', $tt_rows) . '</ul>';
 				$tooltip .= '</div>';
 			}
 			if($booked_slots >= $slots)

@@ -93,6 +93,8 @@
 
 .pj-calendar-tooltip {display: none; background: #fff; -webkit-box-shadow: 0 0 5px 0 rgba(0,0,0,0.5); box-shadow: 0 0 5px 0 rgba(0,0,0,0.5); overflow: auto;}
 .pj-calendar-tooltip ul { list-style: none; padding: 0; margin: 0;}
+/* header of the day popup: used by Theme 11 only */
+.pj-calendar-tooltip .tt-head { display: none; }
 .pj-calendar-tooltip li { color: #909090; }
 
 .pj-calendar-tooltip li + li { margin-top: 5px; } 
