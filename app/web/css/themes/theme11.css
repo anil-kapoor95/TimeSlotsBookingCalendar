@@ -8,6 +8,9 @@
 	/* brand */   /* .tooltipster-base: the day popup is added to <body>, outside the widget, so it needs the variables too */
 	--tsb-primary: #c84e33;
 	--tsb-primary-contrast: #ffffff;
+	/* Back buttons (own colour, grey by default; set from Customize design) */
+	--tsb-back: #6b7280;
+	--tsb-back-contrast: #ffffff;
 	--tsb-accent: #2f6f6a;
 	/* surfaces */
 	--tsb-bg: #fbf1ec;
@@ -33,6 +36,9 @@
 	--tsb-primary-hover: color-mix(in srgb, var(--tsb-primary) 82%, #000);
 	--tsb-primary-soft: color-mix(in srgb, var(--tsb-primary) 11%, var(--tsb-surface));
 	--tsb-primary-ring: color-mix(in srgb, var(--tsb-primary) 30%, transparent);
+	--tsb-back-hover: color-mix(in srgb, var(--tsb-back) 84%, #000);
+	--tsb-back-active: color-mix(in srgb, var(--tsb-back) 70%, #000);
+	--tsb-back-ring: color-mix(in srgb, var(--tsb-back) 30%, transparent);
 	--tsb-accent-soft: color-mix(in srgb, var(--tsb-accent) 13%, var(--tsb-surface));
 	--tsb-warning-soft: color-mix(in srgb, var(--tsb-warning) 14%, var(--tsb-surface));
 	--tsb-danger-soft: color-mix(in srgb, var(--tsb-danger) 11%, var(--tsb-surface));
@@ -70,6 +76,9 @@
 #pjWrapper .btn-sm { padding: 8px 14px; }
 #pjWrapper .btn-primary { background: var(--tsb-primary); border-color: var(--tsb-primary); color: var(--tsb-primary-contrast); }
 #pjWrapper .btn-primary:hover, #pjWrapper .btn-primary:focus, #pjWrapper .btn-primary:active, #pjWrapper .btn-primary:active:hover, #pjWrapper .btn-primary:active:focus { background: var(--tsb-primary-hover); border-color: var(--tsb-primary-hover); color: var(--tsb-primary-contrast); transform: translateY(-1px); box-shadow: 0 8px 18px var(--tsb-primary-ring); }
+#pjWrapper .btn.tsb-back-btn { background: var(--tsb-back); border-color: var(--tsb-back); color: var(--tsb-back-contrast); }
+#pjWrapper .btn.tsb-back-btn:hover, #pjWrapper .btn.tsb-back-btn:focus { background: var(--tsb-back-hover); border-color: var(--tsb-back-hover); color: var(--tsb-back-contrast); transform: translateY(-1px); box-shadow: 0 8px 18px var(--tsb-back-ring); }
+#pjWrapper .btn.tsb-back-btn:active, #pjWrapper .btn.tsb-back-btn:active:hover, #pjWrapper .btn.tsb-back-btn:active:focus { background: var(--tsb-back-active); border-color: var(--tsb-back-active); color: var(--tsb-back-contrast); transform: none; box-shadow: none; }
 #pjWrapper .btn-default { background: var(--tsb-surface); border-color: var(--tsb-border); color: var(--tsb-heading); }
 #pjWrapper .btn-default:hover, #pjWrapper .btn-default:focus { background: var(--tsb-primary-soft); border-color: var(--tsb-primary); color: var(--tsb-primary); }
 #pjWrapper .btn[disabled], #pjWrapper .btn.disabled { opacity: .55; transform: none; box-shadow: none; }

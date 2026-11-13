@@ -35,6 +35,8 @@
 			{pattern: /^#!\/Booking\/([A-Z]{2}\d{10})$/, eventName: "loadBooking"},
 			{pattern: /^#!\/Login$/, eventName: "loadLogin"},
 			{pattern: /^#!\/Profile$/, eventName: "loadProfile"},
+			{pattern: /^#!\/MyBookings$/, eventName: "loadMyBookings"},
+			{pattern: /^#!\/MyBooking\/([A-Z]{2}\d{10})$/, eventName: "loadMyBooking"},
 			{pattern: /^#!\/Forgot$/, eventName: "loadForgot"},
 			{pattern: /^#!\/IpBlocked$/, eventName: "loadIpBlocked"}
 		];
@@ -475,6 +477,33 @@
 				{
 					self.loadProfile.call(self);
 				}
+			}).on('click.ts', '.pjTsMyBookings', function (e) {
+				if (e && e.preventDefault) {
+					e.preventDefault();
+				}
+				if (!pjQ.$(this).data('keep')) {
+					self.my_filter = 'all';
+				}
+				if (!hashBang("#!/MyBookings")) 
+				{
+					self.loadMyBookings.call(self);
+				}
+			}).on('click.ts', '.pjTsMyFilter', function (e) {
+				if (e && e.preventDefault) {
+					e.preventDefault();
+				}
+				self.my_filter = pjQ.$(this).data('filter');
+				self.loadMyBookings.call(self);
+			}).on('click.ts', '.pjTsMyBookingRow', function (e) {
+				if (e && e.preventDefault) {
+					e.preventDefault();
+				}
+				var uuid = pjQ.$(this).data('uuid');
+				if (!hashBang("#!/MyBooking/" + uuid)) 
+				{
+					self.my_uuid = uuid;
+					self.loadMyBooking.call(self);
+				}
 			}).on('click.ts', '.pjTsApplyCode', function (e) {
 				if (e && e.preventDefault) {
 					e.preventDefault();
@@ -686,6 +715,11 @@
 				self.loadLogin.call(self);
 			}).on("loadProfile", this.container, function (e) {
 				self.loadProfile.call(self);
+			}).on("loadMyBookings", this.container, function (e) {
+				self.loadMyBookings.call(self);
+			}).on("loadMyBooking", this.container, function (e, booking_uuid) {
+				self.my_uuid = booking_uuid;
+				self.loadMyBooking.call(self);
 			}).on("loadForgot", this.container, function (e) {
 				self.loadForgot.call(self);
 			}).on("loadIpBlocked", this.container, function (e) {
@@ -792,6 +826,47 @@
 					self.$container.html(data);
 					self.view = 'pjActionProfile';
 					self.bindProfile.call(self);
+				}
+			});
+			return this;
+		},
+		loadMyBookings: function () {
+			var self = this;
+			pjQ.$.get([this.options.folder, "index.php?controller=pjFrontPublic&action=pjActionMyBookings"].join(""), {
+				"session_id": self.options.session_id,
+				"cid": self.cid,
+				"locale": this.options.locale,
+				"hide": this.options.hide,
+				"multi" : self.options.multi,
+				"filter": self.my_filter || 'all'
+			}).done(function (data) {
+				if (data.code != undefined && data.status == 'ERR') {
+					hashBang("#!/IpBlocked");
+				}else{
+					self.$container.html(data);
+					self.view = 'pjActionMyBookings';
+				}
+			});
+			return this;
+		},
+		loadMyBooking: function () {
+			var self = this;
+			pjQ.$.get([this.options.folder, "index.php?controller=pjFrontPublic&action=pjActionMyBookingDetail"].join(""), {
+				"session_id": self.options.session_id,
+				"cid": self.cid,
+				"locale": this.options.locale,
+				"hide": this.options.hide,
+				"multi" : self.options.multi,
+				"booking_uuid": self.my_uuid
+			}).done(function (data) {
+				if (data.code != undefined && data.status == 'ERR') {
+					hashBang("#!/IpBlocked");
+				}else{
+					self.$container.html(data);
+					self.view = 'pjActionMyBookingDetail';
+					pjQ.$('html, body').animate({
+						scrollTop: self.$container.offset().top
+					}, 300);
 				}
 			});
 			return this;

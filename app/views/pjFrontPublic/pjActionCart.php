@@ -108,7 +108,7 @@ include PJ_VIEWS_PATH . 'pjFrontPublic/elements/steps.php';
 			</div><!-- /.panel-body -->
 		
 			<div class="panel-footer">
-				<a href="#" class="btn btn-primary pull-left pjTsSelectorCalendar"><span class="glyphicon glyphicon-chevron-left"></span> <?php __('front_button_back_calendar', false, true); ?></a>
+				<a href="#" class="btn btn-primary pull-left pjTsSelectorCalendar tsb-back-btn"><span class="glyphicon glyphicon-chevron-left"></span> <?php __('front_button_back_calendar', false, true); ?></a>
 		
 				<a href="#" class="btn btn-primary pull-right pjTsSelectorCheckout"><?php __('front_button_proceed', false, true); ?> <span class="glyphicon glyphicon-chevron-right"></span></a>
 			</div><!-- /.panel-footer -->
@@ -117,7 +117,7 @@ include PJ_VIEWS_PATH . 'pjFrontPublic/elements/steps.php';
 			?>
 			<div class="panel-body"><?php __('front_cart_empty');?></div>
 			<div class="panel-footer">
-				<a href="#" class="btn btn-primary pull-left pjTsSelectorCalendar"><span class="glyphicon glyphicon-chevron-left"></span> <?php __('front_button_back_calendar', false, true); ?></a>
+				<a href="#" class="btn btn-primary pull-left pjTsSelectorCalendar tsb-back-btn"><span class="glyphicon glyphicon-chevron-left"></span> <?php __('front_button_back_calendar', false, true); ?></a>
 			</div><!-- /.panel-footer -->
 			<?php
 		}
@@ -125,7 +125,7 @@ include PJ_VIEWS_PATH . 'pjFrontPublic/elements/steps.php';
 		?>
 		<div class="panel-body"><?php __('front_cart_empty');?></div>
 		<div class="panel-footer">
-			<a href="#" class="btn btn-primary pull-left pjTsSelectorCalendar"><span class="glyphicon glyphicon-chevron-left"></span> <?php __('front_button_back_calendar', false, true); ?></a>
+			<a href="#" class="btn btn-primary pull-left pjTsSelectorCalendar tsb-back-btn"><span class="glyphicon glyphicon-chevron-left"></span> <?php __('front_button_back_calendar', false, true); ?></a>
 		</div><!-- /.panel-footer -->
 		<?php
 	} 

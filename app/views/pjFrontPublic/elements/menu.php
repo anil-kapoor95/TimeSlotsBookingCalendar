@@ -4,11 +4,11 @@ $action_name = $controller->_get->toString('action');
 <div class="pj-calendar">
     <div class="pj-calendar-views">
     	<?php
-    	if(in_array($action_name, array('pjActionLogin', 'pjActionProfile', 'pjActionForgot')))
+    	if(in_array($action_name, array('pjActionLogin', 'pjActionProfile', 'pjActionForgot', 'pjActionMyBookings', 'pjActionMyBookingDetail')))
     	{
         	?>
         	<div class="btn-group pull-left">
-        		<a href="#" class="btn btn-primary pull-left pjTsSelectorCalendar"><span class="glyphicon glyphicon-chevron-left"></span> <?php __('front_button_back_calendar', false, true); ?></a>
+        		<a href="#" class="btn btn-primary pull-left pjTsSelectorCalendar tsb-back-btn"><span class="glyphicon glyphicon-chevron-left"></span> <?php __('front_button_back_calendar', false, true); ?></a>
         	</div>
         	<?php
     	}
@@ -18,7 +18,12 @@ $action_name = $controller->_get->toString('action');
     		if($controller->isFrontLogged())
     		{
     		    ?>
-    			<a href="#" class="btn btn-primary pjTsProfile"><span class="glyphicon glyphicon-user"></span> <?php __('front_btn_profile')?></a>
+    			<?php
+    			$tsb_mb_label = __('front_btn_my_bookings', true);
+    			$tsb_mb_label = (is_string($tsb_mb_label) && $tsb_mb_label !== '' && $tsb_mb_label !== 'front_btn_my_bookings') ? $tsb_mb_label : 'My Bookings';
+    			?>
+    			<a href="#" class="btn btn-primary pjTsMyBookings<?php echo in_array($action_name, array('pjActionMyBookings', 'pjActionMyBookingDetail')) ? ' active' : NULL; ?>"><span class="glyphicon glyphicon-list-alt"></span> <?php echo pjSanitize::html($tsb_mb_label); ?></a>
+    			<a href="#" class="btn btn-primary pjTsProfile<?php echo $action_name == 'pjActionProfile' ? ' active' : NULL; ?>"><span class="glyphicon glyphicon-user"></span> <?php __('front_btn_profile')?></a>
     			<a href="#" class="btn btn-primary pjTsLogout"><span class="glyphicon glyphicon-log-out"></span> <?php __('front_btn_logout')?></a>
     			<?php
     		}elseif($action_name != 'pjActionLogin'){

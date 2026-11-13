@@ -63,6 +63,7 @@ class pjAppController extends pjBaseAppController
 			'muted' => '#7d625a',
 			'border' => '#efd9cf',
 			'soft' => '#f9ece9',
+			'back' => '#6b7280',
 			'font_heading' => 'Poppins',
 			'font_body' => 'Inter',
 			'radius' => 18,
@@ -111,7 +112,7 @@ class pjAppController extends pjBaseAppController
 				continue;
 			}
 			$v = $arr[$key];
-			if (in_array($key, array('primary', 'accent', 'bg', 'surface', 'heading', 'text', 'muted', 'border', 'soft'), true))
+			if (in_array($key, array('primary', 'accent', 'bg', 'surface', 'heading', 'text', 'muted', 'border', 'soft', 'back'), true))
 			{
 				if (is_string($v) && preg_match('/^#[0-9a-fA-F]{6}$/', $v))
 				{
@@ -208,6 +209,13 @@ class pjAppController extends pjBaseAppController
 			// white or near-black text on the brand colour, whichever has the better contrast
 			$l = $lum($overrides['primary']);
 			$vars[] = '--tsb-primary-contrast:' . ((1.05 / ($l + 0.05)) >= (($l + 0.05) / 0.06) ? '#ffffff' : '#111111');
+		}
+		if (isset($overrides['back']))
+		{
+			// Back buttons: own colour (default grey lives in theme11.css); text is white or near-black, whichever reads better
+			$vars[] = '--tsb-back:' . $overrides['back'];
+			$l = $lum($overrides['back']);
+			$vars[] = '--tsb-back-contrast:' . ((1.05 / ($l + 0.05)) >= (($l + 0.05) / 0.06) ? '#ffffff' : '#111111');
 		}
 		if (isset($overrides['font_heading']))
 		{

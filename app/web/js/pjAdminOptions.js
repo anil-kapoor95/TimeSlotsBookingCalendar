@@ -578,7 +578,7 @@ $("#boxNotificationsWrapper").on("change", 'input[name="recipient"]', function (
 			C = $.extend({}, cfg.defaults, cfg.saved),
 			softCustom = !!(cfg.saved && cfg.saved.soft),
 			SECTIONS = [
-				['brand', [['primary', 'c_primary'], ['accent', 'c_accent']]],
+				['brand', [['primary', 'c_primary'], ['accent', 'c_accent'], ['back', 'c_back']]],
 				['surfaces', [['bg', 'c_bg'], ['surface', 'c_surface'], ['soft', 'c_soft'], ['border', 'c_border']]],
 				['text', [['heading', 'c_heading'], ['text', 'c_text'], ['muted', 'c_muted']]]
 			],
@@ -635,7 +635,7 @@ $("#boxNotificationsWrapper").on("change", 'input[name="recipient"]', function (
 		function cssVars() {
 			var btn = {pill: '999px', rounded: '10px', square: '3px'};
 			return {
-				'--tsb-primary': C.primary, '--tsb-primary-contrast': contrastOn(C.primary), '--tsb-accent': C.accent, '--tsb-primary-soft': C.soft,
+				'--tsb-primary': C.primary, '--tsb-primary-contrast': contrastOn(C.primary), '--tsb-accent': C.accent, '--tsb-primary-soft': C.soft, '--tsb-back': C.back, '--tsb-back-contrast': contrastOn(C.back),
 				'--tsb-bg': C.bg, '--tsb-surface': C.surface, '--tsb-heading': C.heading, '--tsb-text': C.text, '--tsb-muted': C.muted, '--tsb-border': C.border,
 				'--tsb-font-heading': fontStack(C.font_heading), '--tsb-font-body': fontStack(C.font_body),
 				'--tsb-radius': C.radius + 'px', '--tsb-radius-sm': Math.round(C.radius * 0.66) + 'px', '--tsb-radius-btn': btn[C.button] || btn.pill
@@ -701,7 +701,7 @@ $("#boxNotificationsWrapper").on("change", 'input[name="recipient"]', function (
 			return '<div class="tsbc-chk"><span>' + label + '</span><b class="' + (ok ? 'ok' : 'bad') + '" title="' + (ok ? '' : T.low) + '">' + r.toFixed(1) + ':1 ' + (ok ? '&#10003;' : '&#9888;') + '</b></div>';
 		}
 		function checksHtml() {
-			return check(T.chk_button, contrastOn(C.primary), C.primary) + check(T.chk_text, C.text, C.surface) + check(T.chk_muted, C.muted, C.surface) + check(T.chk_brand, C.primary, C.bg);
+			return check(T.chk_button, contrastOn(C.primary), C.primary) + check(T.chk_back, contrastOn(C.back), C.back) + check(T.chk_text, C.text, C.surface) + check(T.chk_muted, C.muted, C.surface) + check(T.chk_brand, C.primary, C.bg);
 		}
 		function colorRow(key, labelKey) {
 			return '<div class="tsbc-fld"><label>' + T[labelKey] + '</label><span class="tsbc-clr"><input type="color" data-k="' + key + '" value="' + C[key] + '"><input type="text" class="tsbc-hex" data-hex="' + key + '" value="' + C[key] + '" maxlength="7" spellcheck="false" autocomplete="off"></span></div>';
@@ -791,7 +791,9 @@ $("#boxNotificationsWrapper").on("change", 'input[name="recipient"]', function (
 		}).on('click', '[data-preset]', function () {
 			var name = $(this).data('preset'),
 				p = $.grep(PRESETS, function (x) { return x.n === name; })[0];
+			var keepBack = C.back;
 			C = $.extend({}, cfg.defaults, p.v);
+			C.back = keepBack; // palettes do not touch the Back button colour
 			softCustom = false;
 			C.soft = derivedSoft();
 			renderPanel();

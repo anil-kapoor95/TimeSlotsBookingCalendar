@@ -360,7 +360,7 @@ if (isset($tpl['status']) && $tpl['status'] == 'OK')
 			</div><!-- /.panel-body -->
 	
 			<div class="panel-footer">
-				<a href="#" class="btn btn-primary pull-left pjTsSelectorCalendar"><span class="glyphicon glyphicon-chevron-left"></span> <?php __('front_button_back', false, true); ?></a>
+				<a href="#" class="btn btn-primary pull-left pjTsSelectorCalendar tsb-back-btn"><span class="glyphicon glyphicon-chevron-left"></span> <?php __('front_button_back', false, true); ?></a>
 	
 				<button type="submit" class="btn btn-primary pull-right"><?php __('front_button_continue', false, true); ?></button>
 			</div><!-- /.panel-footer -->

@@ -274,7 +274,7 @@
 			} 
 			?>
 			
-			<a href="#" class="pull-left btn btn-primary btn-back pjTsSelectorCalendar"><span class="glyphicon glyphicon-chevron-left"></span> <?php __('front_button_back', false, true); ?></a>
+			<a href="#" class="pull-left btn btn-primary btn-back pjTsSelectorCalendar tsb-back-btn"><span class="glyphicon glyphicon-chevron-left"></span> <?php __('front_button_back', false, true); ?></a>
 			<?php
 			if (!isset($tpl['dayoff']) && $hasAvailableSlots)
 			{ 

@@ -468,5 +468,168 @@ class pjFrontPublic extends pjFront
 	        }
 	    }
 	}
+	
+	/**
+	 * My Bookings (logged-in customer).
+	 * The owner is ALWAYS taken from the server-side login session - never from the request - so a customer
+	 * can only ever read the bookings that belong to his own account.
+	 */
+	protected function getMyClientIds()
+	{
+	    $ids = array();
+	    if ($this->isFrontLogged())
+	    {
+	        $arr = pjClientModel::factory()->where('t1.foreign_id', (int) $this->getClientId())->findAll()->getData();
+	        foreach ($arr as $v)
+	        {
+	            $ids[] = (int) $v['id'];
+	        }
+	    }
+	    return $ids;
+	}
+	
+	protected function getMyBookingsData($client_ids, $uuid = NULL)
+	{
+	    if (empty($client_ids))
+	    {
+	        return array();
+	    }
+	    # explicit column list: the encrypted card columns (cc_*) are never selected
+	    $pjBookingModel = pjBookingModel::factory()
+	    ->select("t1.id, t1.uuid, t1.calendar_id, t1.locale_id, t1.booking_status, t1.booking_price, t1.booking_tax, t1.booking_discount, t1.discount_code,
+	        t1.booking_total, t1.booking_deposit, t1.payment_method, t1.txn_id, t1.customer_notes, t1.customer_state, t1.customer_city, t1.customer_zip,
+	        t1.customer_address_1, t1.customer_address_2, t1.created, t2.content AS calendar_name, t4.name AS customer_name, t4.email AS customer_email, t4.phone AS customer_phone")
+	    ->join('pjMultiLang', "t2.model='pjCalendar' AND t2.foreign_id=t1.calendar_id AND t2.locale='" . (int) $this->getLocaleId() . "' AND t2.field='title'", 'left outer')
+	    ->join('pjClient', "t1.client_id=t3.id", 'left outer')
+	    ->join('pjAuthUser', "t3.foreign_id=t4.id", 'left outer')
+	    ->whereIn('t1.client_id', $client_ids);
+	    if ($uuid !== NULL)
+	    {
+	        $pjBookingModel->where('t1.uuid', $uuid)->limit(1);
+	    }
+	    $booking_arr = $pjBookingModel->orderBy('t1.created DESC, t1.id DESC')->findAll()->getData();
+	    if (empty($booking_arr))
+	    {
+	        return array();
+	    }
+	    $ids = array();
+	    foreach ($booking_arr as $v)
+	    {
+	        $ids[] = (int) $v['id'];
+	    }
+	    $slots = array();
+	    $slot_arr = pjBookingSlotModel::factory()->whereIn('t1.booking_id', $ids)->orderBy('t1.start_ts ASC, t1.id ASC')->findAll()->getData();
+	    foreach ($slot_arr as $s)
+	    {
+	        $slots[(int) $s['booking_id']][] = $s;
+	    }
+	    $now = time();
+	    foreach ($booking_arr as $k => $v)
+	    {
+	        $list = isset($slots[(int) $v['id']]) ? $slots[(int) $v['id']] : array();
+	        $first = 0;
+	        $last = 0;
+	        foreach ($list as $s)
+	        {
+	            $st = (int) $s['start_ts'];
+	            $en = max((int) $s['end_ts'], $st);
+	            $first = $first == 0 ? $st : min($first, $st);
+	            $last = max($last, $en);
+	        }
+	        $is_past = $last > 0 && $last < $now;
+	        if ($v['booking_status'] == 'cancelled')
+	        {
+	            $state = 'cancelled';
+	        } elseif ($v['booking_status'] == 'confirmed') {
+	            $state = $is_past ? 'completed' : 'confirmed';
+	        } else {
+	            $state = 'pending';
+	        }
+	        $booking_arr[$k]['slots'] = $list;
+	        $booking_arr[$k]['first_ts'] = $first;
+	        $booking_arr[$k]['last_ts'] = $last;
+	        $booking_arr[$k]['is_past'] = $is_past;
+	        $booking_arr[$k]['state'] = $state;
+	    }
+	    return $booking_arr;
+	}
+	
+	public function pjActionMyBookings()
+	{
+	    if ($this->isXHR() || $this->_get->check('_escaped_fragment_'))
+	    {
+	        $logged = $this->isFrontLogged();
+	        $this->set('logged', $logged);
+	        if ($logged)
+	        {
+	            $filter = $this->_get->toString('filter');
+	            if (!in_array($filter, array('all', 'upcoming', 'past', 'cancelled'), true))
+	            {
+	                $filter = 'all';
+	            }
+	            $all = $this->getMyBookingsData($this->getMyClientIds());
+	            $counts = array('all' => count($all), 'upcoming' => 0, 'past' => 0, 'cancelled' => 0);
+	            $upcoming = $rest = array();
+	            foreach ($all as $v)
+	            {
+	                if ($v['state'] == 'cancelled')
+	                {
+	                    $counts['cancelled']++;
+	                } elseif ($v['is_past']) {
+	                    $counts['past']++;
+	                } else {
+	                    $counts['upcoming']++;
+	                }
+	            }
+	            $booking_arr = array();
+	            foreach ($all as $v)
+	            {
+	                $show = $filter == 'all'
+	                    || ($filter == 'cancelled' && $v['state'] == 'cancelled')
+	                    || ($filter == 'past' && $v['state'] != 'cancelled' && $v['is_past'])
+	                    || ($filter == 'upcoming' && $v['state'] != 'cancelled' && !$v['is_past']);
+	                if ($show)
+	                {
+	                    $booking_arr[] = $v;
+	                }
+	            }
+	            if ($filter == 'upcoming')
+	            {
+	                # soonest first
+	                usort($booking_arr, function ($a, $b) { return $a['first_ts'] <=> $b['first_ts']; });
+	            }
+	            $this->set('filter', $filter);
+	            $this->set('counts', $counts);
+	            $this->set('booking_arr', $booking_arr);
+	        }
+	    }
+	}
+	
+	public function pjActionMyBookingDetail()
+	{
+	    if ($this->isXHR() || $this->_get->check('_escaped_fragment_'))
+	    {
+	        $this->set('logged', $this->isFrontLogged());
+	        $this->set('status', 'ERR');
+	        $uuid = $this->_get->toString('booking_uuid');
+	        if ($this->isFrontLogged() && preg_match('/^[A-Z]{2}\d{10}$/', (string) $uuid))
+	        {
+	            # ownership is part of the query itself: a booking of another customer is simply "not found"
+	            $arr = $this->getMyBookingsData($this->getMyClientIds(), $uuid);
+	            if (!empty($arr))
+	            {
+	                $booking_arr = $arr[0];
+	                if (pjObject::getPlugin('pjPayments') !== NULL)
+	                {
+	                    $this->set('payment_titles', pjPayments::getPaymentTitles($booking_arr['calendar_id'], $this->getLocaleId()));
+	                } else {
+	                    $this->set('payment_titles', __('payment_methods', true));
+	                }
+	                $this->set('booking_arr', $booking_arr);
+	                $this->set('status', 'OK');
+	            }
+	        }
+	    }
+	}
 }
 ?>

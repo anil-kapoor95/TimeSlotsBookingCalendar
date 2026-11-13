@@ -191,7 +191,7 @@ if (isset($tpl['status']) && $tpl['status'] == 'OK')
 				</div><!-- /.panel-body -->
 		
 				<div class="panel-footer">
-					<a href="#" class="btn btn-primary pull-left pjTsSelectorCheckout"><span class="glyphicon glyphicon-chevron-left"></span> <span class="tsb-orig"><?php __('front_button_cancel', false, true); ?></span><span class="tsb-only"><?php echo pjSanitize::html($tsb_label('front_confirm_edit', 'Edit details')); ?></span></a>
+					<a href="#" class="btn btn-primary pull-left pjTsSelectorCheckout tsb-back-btn"><span class="glyphicon glyphicon-chevron-left"></span> <span class="tsb-orig"><?php __('front_button_cancel', false, true); ?></span><span class="tsb-only"><?php echo pjSanitize::html($tsb_label('front_confirm_edit', 'Edit details')); ?></span></a>
 		
 					<button type="submit" class="btn btn-primary pull-right"><?php __('front_button_confirm', false, true); ?></button>
 				</div><!-- /.panel-footer -->
