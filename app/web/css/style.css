@@ -379,7 +379,7 @@
 #pjWrapper .tsb-my-count { display: inline-block; min-width: 20px; padding: 0 6px; margin-left: 4px; border-radius: 10px; font-size: 12px; text-align: center; background: rgba(0, 0, 0, .08); }
 #pjWrapper .tsb-my-filter.active .tsb-my-count { background: rgba(255, 255, 255, .25); }
 #pjWrapper .tsb-my-list { display: flex; flex-direction: column; gap: 10px; }
-#pjWrapper .tsb-my-item { position: relative; display: grid; grid-template-columns: 1fr; gap: 6px; padding: 14px 44px 14px 16px; border: 1px solid var(--tsb-border, #ddd); border-left-width: 4px; border-radius: var(--tsb-radius-sm, 6px); background: var(--tsb-surface, #fff); color: var(--tsb-text, #333); text-decoration: none; }
+#pjWrapper .tsb-my-item { position: relative; display: grid; grid-template-columns: 1fr; gap: 6px; padding: 14px 16px; border: 1px solid var(--tsb-border, #ddd); border-left-width: 4px; border-radius: var(--tsb-radius-sm, 6px); background: var(--tsb-surface, #fff); color: var(--tsb-text, #333); text-decoration: none; }
 #pjWrapper .tsb-my-item:hover, #pjWrapper .tsb-my-item:focus { text-decoration: none; color: var(--tsb-text, #333); border-color: var(--tsb-primary, #337ab7); box-shadow: 0 4px 14px rgba(0, 0, 0, .08); }
 #pjWrapper .tsb-my-item.tsb-st-confirmed { border-left-color: var(--tsb-success, #2e7d5b); }
 #pjWrapper .tsb-my-item.tsb-st-pending { border-left-color: var(--tsb-warning, #a85d00); }
@@ -390,7 +390,6 @@
 #pjWrapper .tsb-my-when, #pjWrapper .tsb-my-meta { display: flex; flex-wrap: wrap; gap: 4px 16px; font-size: 14px; color: var(--tsb-muted, #666); }
 #pjWrapper .tsb-my-meta strong { color: var(--tsb-text, #333); }
 #pjWrapper .tsb-my-more { margin-left: 6px; padding: 0 7px; border-radius: 10px; background: rgba(0, 0, 0, .08); font-size: 12px; }
-#pjWrapper .tsb-my-go { position: absolute; right: 16px; top: 50%; margin-top: -7px; color: var(--tsb-muted, #888); }
 #pjWrapper .tsb-badge { display: inline-block; padding: 3px 10px; border-radius: 999px; font-size: 12px; font-weight: 600; line-height: 1.4; color: #fff; background: #777; }
 #pjWrapper .tsb-badge-confirmed, #pjWrapper .tsb-badge-paid { background: var(--tsb-success, #2e7d5b); }
 #pjWrapper .tsb-badge-pending { background: var(--tsb-warning, #a85d00); }

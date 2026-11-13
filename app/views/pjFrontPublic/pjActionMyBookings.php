@@ -114,7 +114,6 @@ $hide_prices = (int) $tpl['option_arr']['o_hide_prices'] === 1;
 								}
 								?>
 							</span>
-							<span class="glyphicon glyphicon-chevron-right tsb-my-go" aria-hidden="true"></span>
 						</a>
 						<?php
 					}
