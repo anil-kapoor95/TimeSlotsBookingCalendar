@@ -1,14 +1,16 @@
 <?php
 $action_name = $controller->_get->toString('action');
+# logged-in customer: [Back] | My Bookings / Profile switch | Logout icon (on every page that shows this top bar)
+$tsb_area = $controller->isFrontLogged();
 ?>
 <div class="pj-calendar">
-    <div class="pj-calendar-views">
+    <div class="pj-calendar-views<?php echo $tsb_area ? ' tsb-area-bar' : NULL; ?>">
     	<?php
     	if(in_array($action_name, array('pjActionLogin', 'pjActionProfile', 'pjActionForgot', 'pjActionMyBookings', 'pjActionMyBookingDetail')))
     	{
         	?>
         	<div class="btn-group pull-left">
-        		<a href="#" class="btn btn-primary pull-left pjTsSelectorCalendar tsb-back-btn"><span class="glyphicon glyphicon-chevron-left"></span> <?php __('front_button_back_calendar', false, true); ?></a>
+        		<a href="#" class="btn btn-primary pull-left pjTsSelectorCalendar tsb-back-btn"><span class="glyphicon glyphicon-chevron-left"></span> <?php if ($tsb_area) { ?><span class="tsb-t"><?php __('front_button_back_calendar', false, true); ?></span><?php } else { __('front_button_back_calendar', false, true); } ?></a>
         	</div>
         	<?php
     	}
@@ -22,9 +24,26 @@ $action_name = $controller->_get->toString('action');
     			$tsb_mb_label = __('front_btn_my_bookings', true);
     			$tsb_mb_label = (is_string($tsb_mb_label) && $tsb_mb_label !== '' && $tsb_mb_label !== 'front_btn_my_bookings') ? $tsb_mb_label : 'My Bookings';
     			?>
+    			<?php
+    			if ($tsb_area)
+    			{
+    				$tsb_lo = __('front_btn_logout', true);
+    				$tsb_lo = (is_string($tsb_lo) && $tsb_lo !== '') ? $tsb_lo : 'Logout';
+    				?>
+    				<span class="tsb-seg">
+    					<a href="#" class="btn btn-primary pjTsMyBookings<?php echo in_array($action_name, array('pjActionMyBookings', 'pjActionMyBookingDetail')) ? ' active' : NULL; ?>"><span class="glyphicon glyphicon-list-alt"></span> <span class="tsb-t"><?php echo pjSanitize::html($tsb_mb_label); ?></span></a>
+    					<a href="#" class="btn btn-primary pjTsProfile<?php echo $action_name == 'pjActionProfile' ? ' active' : NULL; ?>"><span class="glyphicon glyphicon-user"></span> <span class="tsb-t"><?php __('front_btn_profile')?></span></a>
+    				</span>
+    				<a href="#" class="btn btn-primary pjTsLogout tsb-iconbtn" title="<?php echo pjSanitize::html($tsb_lo); ?>" aria-label="<?php echo pjSanitize::html($tsb_lo); ?>"><span class="glyphicon glyphicon-log-out"></span><span class="tsb-vh"><?php echo pjSanitize::html($tsb_lo); ?></span></a>
+    				<?php
+    			} else {
+    				?>
     			<a href="#" class="btn btn-primary pjTsMyBookings<?php echo in_array($action_name, array('pjActionMyBookings', 'pjActionMyBookingDetail')) ? ' active' : NULL; ?>"><span class="glyphicon glyphicon-list-alt"></span> <?php echo pjSanitize::html($tsb_mb_label); ?></a>
     			<a href="#" class="btn btn-primary pjTsProfile<?php echo $action_name == 'pjActionProfile' ? ' active' : NULL; ?>"><span class="glyphicon glyphicon-user"></span> <?php __('front_btn_profile')?></a>
     			<a href="#" class="btn btn-primary pjTsLogout"><span class="glyphicon glyphicon-log-out"></span> <?php __('front_btn_logout')?></a>
+    				<?php
+    			}
+    			?>
     			<?php
     		}elseif($action_name != 'pjActionLogin'){
     			# (no Login button while the login form itself is open)

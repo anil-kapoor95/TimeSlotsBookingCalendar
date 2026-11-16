@@ -29,8 +29,18 @@ if (isset($tpl['status']) && $tpl['status'] == 'OK')
 				<span class="tsb-only tsb-ptitle"><?php echo pjSanitize::html($tsb_label('front_confirm_title', 'Confirm your booking')); ?></span>
 			</div><!-- /.panel-heading -->
 	
-			<form action="" method="post" class="pjTsSelectorPreviewForm">
+			<?php
+			$tsb_is_stripe = (@$FORM['payment_method'] === 'stripe');
+			?>
+			<form action="" method="post" class="pjTsSelectorPreviewForm"
+				data-payment="<?php echo pjSanitize::html((string) @$FORM['payment_method']); ?>"
+				data-msg-wait="<?php echo pjSanitize::html($tsb_label('front_processing_confirm', 'Please wait, confirming your booking...')); ?>"
+				data-msg-stripe="<?php echo pjSanitize::html($tsb_label('front_processing_stripe', 'Connecting to Stripe, please wait...')); ?>"
+				data-msg-error="<?php echo pjSanitize::html($tsb_label('front_processing_error', 'Something went wrong while confirming your booking. Please try again.')); ?>"
+				data-msg-timeout="<?php echo pjSanitize::html($tsb_label('front_processing_timeout', 'The server is taking too long to answer. Please click Confirm & Proceed again - your booking will not be duplicated.')); ?>"
+				data-msg-network="<?php echo pjSanitize::html($tsb_label('front_processing_network', 'Connection problem. Please check your internet connection and try again.')); ?>">
 				<input type="hidden" name="ts_preview" value="1" />
+				<input type="hidden" name="order_token" value="<?php echo md5(uniqid((string) mt_rand(), true)); ?>" />
 				<div class="panel-body">
 					<p class="tsb-only tsb-lead"><?php echo pjSanitize::html($tsb_label('front_confirm_lead', 'Please check your details below and press Confirm to complete your booking.')); ?></p>
 					<div class="pj-calendar-form">
@@ -189,11 +199,16 @@ if (isset($tpl['status']) && $tpl['status'] == 'OK')
 						?>
 					</div><!-- /.form -->
 				</div><!-- /.panel-body -->
+				
+				<div class="tsb-pay-state" aria-live="polite">
+					<p class="tsb-processing" role="status" style="display:none"><span class="tsb-spinner" aria-hidden="true"></span><span class="tsb-processing-text"></span></p>
+					<p class="tsb-pay-error alert alert-danger" role="alert" style="display:none"></p>
+				</div>
 		
 				<div class="panel-footer">
 					<a href="#" class="btn btn-primary pull-left pjTsSelectorCheckout tsb-back-btn"><span class="glyphicon glyphicon-chevron-left"></span> <span class="tsb-orig"><?php __('front_button_cancel', false, true); ?></span><span class="tsb-only"><?php echo pjSanitize::html($tsb_label('front_confirm_edit', 'Edit details')); ?></span></a>
 		
-					<button type="submit" class="btn btn-primary pull-right"><?php __('front_button_confirm', false, true); ?></button>
+					<button type="submit" class="btn btn-primary pull-right tsb-confirm-btn"><span class="tsb-spinner" aria-hidden="true" style="display:none"></span><span class="tsb-btn-label"><?php __('front_button_confirm', false, true); ?></span></button>
 				</div><!-- /.panel-footer -->
 			</form>
 		</div><!-- /.panel -->

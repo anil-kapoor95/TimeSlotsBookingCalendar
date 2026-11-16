@@ -381,6 +381,8 @@ class pjEmail
 		$mail = new pjPHPMailer();
 		$mail->set('CharSet', $this->charset);
 		$mail->set('ContentType', $this->contentType);
+		# PHPMailer waits up to 300 seconds per SMTP step by default; keep it short so a dead mail server cannot hang the script
+		$mail->Timeout = 15;
 		if($this->transport == 'mail')
 		{
 		    $mail->isMail();

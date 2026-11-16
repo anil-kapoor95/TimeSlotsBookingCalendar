@@ -19,7 +19,7 @@ if (isset($tpl['status']) && $tpl['status'] == "OK")
 	            $payment_messages = __('payment_plugin_messages');
 	            ?>
 	            <div class="panel-body">
-	            <p class="text-center"><?php echo isset($payment_messages[$tpl['booking_arr']['payment_method']]) ? $payment_messages[$tpl['booking_arr']['payment_method']]: ''; ?></p>
+	            <p class="text-center tsb-pay-intro"><?php echo isset($payment_messages[$tpl['booking_arr']['payment_method']]) ? $payment_messages[$tpl['booking_arr']['payment_method']]: ''; ?></p>
 	            <?php
                 if (pjObject::getPlugin($tpl['params']['plugin']) !== NULL)
                 {

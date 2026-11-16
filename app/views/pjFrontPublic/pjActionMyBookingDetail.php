@@ -20,10 +20,20 @@ $row = function ($label, $value)
 	<?php
 };
 ?>
-<div class="panel panel-primary">
-	<div class="panel-heading">
-		<?php echo pjSanitize::html($tsb_label('front_my_detail_title', 'Booking details')); ?>
-	</div><!-- /.panel-heading -->
+<?php
+$tsb_ok = !empty($tpl['logged']) && $tpl['status'] == 'OK';
+?>
+<div class="<?php echo $tsb_ok ? 'tsb-my-wrap' : 'panel panel-primary'; ?>">
+	<?php
+	if (!$tsb_ok)
+	{
+		?>
+		<div class="panel-heading">
+			<?php echo pjSanitize::html($tsb_label('front_my_detail_title', 'Booking details')); ?>
+		</div><!-- /.panel-heading -->
+		<?php
+	}
+	?>
 	<?php
 	if (empty($tpl['logged']) || $tpl['status'] != 'OK')
 	{
@@ -52,8 +62,14 @@ $row = function ($label, $value)
 		);
 		$payment_titles = is_array($tpl['payment_titles']) ? $tpl['payment_titles'] : array();
 		$method = isset($payment_titles[$b['payment_method']]) ? $payment_titles[$b['payment_method']] : $b['payment_method'];
-		# there is no payment-status column: a transaction id means the online payment went through
-		if ($b['txn_id'] != '')
+		# there is no payment-status column. An online payment counts as paid when a transaction id was stored
+		# OR when the payment gateway moved the booking to the "status if paid" (this script's payment confirmation
+		# only changed the booking status, so older Stripe bookings have no transaction id)
+		$tsb_paid_status = isset($tpl['option_arr']['o_status_if_paid']) ? $tpl['option_arr']['o_status_if_paid'] : '';
+		$tsb_unpaid_status = isset($tpl['option_arr']['o_status_if_not_paid']) ? $tpl['option_arr']['o_status_if_not_paid'] : '';
+		$tsb_is_online = !in_array($b['payment_method'], array('', 'cash', 'bank'), true);
+		$tsb_paid_by_status = $tsb_is_online && $tsb_paid_status !== '' && $tsb_paid_status != $tsb_unpaid_status && $b['booking_status'] == $tsb_paid_status;
+		if ($b['txn_id'] != '' || $tsb_paid_by_status)
 		{
 			$pay_state = array('paid', $tsb_label('front_my_pay_paid', 'Paid'));
 		} elseif ($b['state'] == 'cancelled') {
@@ -74,27 +90,58 @@ $row = function ($label, $value)
 			}
 		}
 		?>
-		<div class="panel-body">
-			<div class="pj-calendar-form tsb-my-detail">
-				<?php
-				$row($tsb_label('front_my_col_id', 'Booking ID'), '<strong>' . pjSanitize::html($b['uuid']) . '</strong>');
-				$row($tsb_label('front_my_col_service', 'Service'), pjSanitize::html($b['calendar_name']));
-				$row($tsb_label('front_my_col_status', 'Status'), '<span class="tsb-badge tsb-badge-' . $b['state'] . '">' . pjSanitize::html($states[$b['state']]) . '</span>');
-				$row($tsb_label('front_my_col_created', 'Booked on'), pjSanitize::html(date($tpl['option_arr']['o_date_format'] . ' ' . $tpl['option_arr']['o_time_format'], strtotime($b['created']))));
-				?>
-				<h5 class="tsb-my-section"><?php echo pjSanitize::html($tsb_label('front_my_section_slots', 'Date & time')); ?></h5>
-				<div class="tsb-my-slots">
+		<div class="tsb-my-detail">
+			<?php
+			$first = !empty($b['slots']) ? $b['slots'][0] : NULL;
+			$extra = count($b['slots']) - 1;
+			$kv = function ($label, $value, $class = '')
+			{
+				if ($value === NULL || $value === '')
+				{
+					return;
+				}
+				?><div class="tsb-kv<?php echo $class != '' ? ' ' . $class : NULL; ?>"><span><?php echo pjSanitize::html($label); ?></span><span><?php echo $value; ?></span></div><?php
+			};
+			?>
+			<div class="tsb-hero">
+				<div class="tsb-hero-main">
+					<span class="tsb-hero-svc"><?php echo pjSanitize::html($b['calendar_name']); ?></span>
+					<span class="tsb-hero-id"><?php echo pjSanitize::html($b['uuid']); ?></span>
+					<?php
+					if ($first)
+					{
+						?>
+						<div class="tsb-hero-when">
+							<div><span><?php echo pjSanitize::html($tsb_label('front_my_col_date', 'Date')); ?></span><b><?php echo pjDateTime::formatDate($first['booking_date'], 'Y-m-d', $tpl['option_arr']['o_date_format']); ?></b></div>
+							<div><span><?php echo pjSanitize::html($tsb_label('front_my_col_time', 'Time')); ?></span><b><?php echo date($tpl['option_arr']['o_time_format'], $first['start_ts']); ?> - <?php echo date($tpl['option_arr']['o_time_format'], $first['end_ts']); ?><?php echo $extra > 0 ? ' &middot; +' . $extra . ' ' . pjSanitize::html($tsb_label('front_my_more', 'more')) : NULL; ?></b></div>
+						</div>
+						<?php
+					}
+					?>
+				</div>
+				<div class="tsb-hero-side">
+					<span class="tsb-badge tsb-badge-<?php echo $b['state']; ?>"><?php echo pjSanitize::html($states[$b['state']]); ?></span>
+					<?php
+					if (!$hide_prices)
+					{
+						?><span class="tsb-hero-total"><?php echo pjCurrency::formatPrice($b['booking_total']); ?></span><?php
+					}
+					?>
+				</div>
+			</div>
+			<div class="tsb-dgrid">
+				<div class="tsb-dcard tsb-full">
+					<h5><?php echo pjSanitize::html($tsb_label('front_my_section_slots', 'Date & time')); ?></h5>
 					<?php
 					foreach ($b['slots'] as $s)
 					{
 						?>
-						<div class="tsb-my-slot">
-							<span><span class="glyphicon glyphicon-calendar" aria-hidden="true"></span> <?php echo pjDateTime::formatDate($s['booking_date'], 'Y-m-d', $tpl['option_arr']['o_date_format']); ?></span>
-							<span><span class="glyphicon glyphicon-time" aria-hidden="true"></span> <?php echo date($tpl['option_arr']['o_time_format'], $s['start_ts']); ?> - <?php echo date($tpl['option_arr']['o_time_format'], $s['end_ts']); ?></span>
+						<div class="tsb-slot">
+							<span><?php echo pjDateTime::formatDate($s['booking_date'], 'Y-m-d', $tpl['option_arr']['o_date_format']); ?> &middot; <b><?php echo date($tpl['option_arr']['o_time_format'], $s['start_ts']); ?> - <?php echo date($tpl['option_arr']['o_time_format'], $s['end_ts']); ?></b></span>
 							<?php
 							if (!$hide_prices && (float) $s['price'] > 0)
 							{
-								?><span class="tsb-my-slot-price"><?php echo (int) $s['cnt']; ?> &times; <?php echo pjCurrency::formatPrice($s['price']); ?></span><?php
+								?><b><?php echo (int) $s['cnt']; ?> &times; <?php echo pjCurrency::formatPrice($s['price']); ?></b><?php
 							}
 							?>
 						</div>
@@ -106,30 +153,42 @@ $row = function ($label, $value)
 				if (!$hide_prices)
 				{
 					?>
-					<h5 class="tsb-my-section"><?php echo pjSanitize::html($tsb_label('front_my_section_payment', 'Payment')); ?></h5>
+					<div class="tsb-dcard">
+						<h5><?php echo pjSanitize::html($tsb_label('front_my_section_payment', 'Payment')); ?></h5>
+						<?php
+						# same fields and order as the admin booking form: method, voucher code, price, discount, tax, total, deposit
+						# price, discount, tax, total and deposit are always shown (0.00 when empty); the voucher code only when one was used
+						$kv($tsb_label('front_my_col_method', 'Payment method'), pjSanitize::html($method));
+						if ($b['discount_code'] != '')
+						{
+							$kv($tsb_label('front_my_col_voucher', 'Voucher code'), pjSanitize::html($b['discount_code']));
+						}
+						$kv($tsb_label('front_my_col_price', 'Price'), pjCurrency::formatPrice($b['booking_price']));
+						$kv($tsb_label('front_my_col_discount', 'Discount'), ((float) $b['booking_discount'] > 0 ? '- ' : '') . pjCurrency::formatPrice($b['booking_discount']));
+						$kv($tsb_label('front_my_col_tax', 'Tax'), pjCurrency::formatPrice($b['booking_tax']));
+						$kv($tsb_label('front_my_col_total', 'Total'), '<strong>' . pjCurrency::formatPrice($b['booking_total']) . '</strong>', 'tsb-total');
+						$kv($tsb_label('front_my_col_deposit', 'Deposit'), pjCurrency::formatPrice($b['booking_deposit']));
+						?>
+					</div>
 					<?php
-					$row($tsb_label('front_my_col_method', 'Payment method'), pjSanitize::html($method));
-					$row($tsb_label('front_my_col_pay_status', 'Payment status'), '<span class="tsb-badge tsb-badge-' . $pay_state[0] . '">' . pjSanitize::html($pay_state[1]) . '</span>');
-					$row($tsb_label('front_my_col_price', 'Price'), (float) $b['booking_price'] > 0 ? pjCurrency::formatPrice($b['booking_price']) : NULL);
-					$row($tsb_label('front_my_col_discount', 'Discount'), (float) $b['booking_discount'] > 0 ? '- ' . pjCurrency::formatPrice($b['booking_discount']) . ($b['discount_code'] != '' ? ' (' . pjSanitize::html($b['discount_code']) . ')' : '') : NULL);
-					$row($tsb_label('front_my_col_tax', 'Tax'), (float) $b['booking_tax'] > 0 ? pjCurrency::formatPrice($b['booking_tax']) : NULL);
-					$row($tsb_label('front_my_col_total', 'Total'), '<strong>' . pjCurrency::formatPrice($b['booking_total']) . '</strong>');
-					$row($tsb_label('front_my_col_deposit', 'Deposit'), (float) $b['booking_deposit'] > 0 ? pjCurrency::formatPrice($b['booking_deposit']) : NULL);
 				}
 				?>
-				<h5 class="tsb-my-section"><?php echo pjSanitize::html($tsb_label('front_my_section_contact', 'Your details')); ?></h5>
-				<?php
-				$row($tsb_label('front_my_col_name', 'Name'), pjSanitize::html($b['customer_name']));
-				$row($tsb_label('front_my_col_email', 'Email'), pjSanitize::html($b['customer_email']));
-				$row($tsb_label('front_my_col_phone', 'Phone'), pjSanitize::html($b['customer_phone']));
-				$row($tsb_label('front_my_col_address', 'Address'), !empty($address) ? join(', ', $address) : NULL);
-				$row($tsb_label('front_my_col_notes', 'Notes'), $b['customer_notes'] != '' ? nl2br(pjSanitize::html($b['customer_notes'])) : NULL);
-				?>
-			</div><!-- /.pj-calendar-form -->
-		</div><!-- /.panel-body -->
-		<div class="panel-footer">
-			<a href="#" class="btn btn-primary pjTsMyBookings tsb-back-btn" data-keep="1"><span class="glyphicon glyphicon-chevron-left"></span> <?php echo pjSanitize::html($tsb_label('front_my_back', 'Back to My Bookings')); ?></a>
-		</div><!-- /.panel-footer -->
+				<div class="tsb-dcard">
+					<h5><?php echo pjSanitize::html($tsb_label('front_my_section_contact', 'Your details')); ?></h5>
+					<?php
+					$kv($tsb_label('front_my_col_created', 'Booked on'), pjSanitize::html(date($tpl['option_arr']['o_date_format'] . ' ' . $tpl['option_arr']['o_time_format'], strtotime($b['created']))));
+					$kv($tsb_label('front_my_col_name', 'Name'), pjSanitize::html($b['customer_name']));
+					$kv($tsb_label('front_my_col_email', 'Email'), pjSanitize::html($b['customer_email']));
+					$kv($tsb_label('front_my_col_phone', 'Phone'), pjSanitize::html($b['customer_phone']));
+					$kv($tsb_label('front_my_col_address', 'Address'), !empty($address) ? join(', ', $address) : NULL);
+					$kv($tsb_label('front_my_col_notes', 'Notes'), $b['customer_notes'] != '' ? nl2br(pjSanitize::html($b['customer_notes'])) : NULL);
+					?>
+				</div>
+			</div><!-- /.tsb-dgrid -->
+			<div class="tsb-my-foot">
+				<a href="#" class="btn btn-primary pjTsMyBookings tsb-back-btn" data-keep="1"><span class="glyphicon glyphicon-chevron-left"></span> <?php echo pjSanitize::html($tsb_label('front_my_back', 'Back to My Bookings')); ?></a>
+			</div>
+		</div><!-- /.tsb-my-detail -->
 		<?php
 	}
 	?>

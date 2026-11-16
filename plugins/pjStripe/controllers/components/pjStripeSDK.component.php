@@ -16,6 +16,7 @@ class pjStripeSDK extends pjPaymentsSDK
 	protected function request($path=null, $params=null)
 	{
 		$http = new pjHttp();
+		$http->setTimeout(20);
 		
 		if ($params)
 		{
@@ -41,7 +42,14 @@ class pjStripeSDK extends pjPaymentsSDK
 		
 		if (method_exists($http, 'getHttpCode') && $http->getHttpCode() != 200)
 		{
-			return array('status' => 'ERR', 'code' => 101, 'text' => 'HTTP Code: ' . $http->getHttpCode());
+			$text = 'HTTP Code: ' . $http->getHttpCode();
+			# Stripe explains the problem in the JSON body (e.g. "Invalid API Key provided") - keep it
+			$body = json_decode((string) $http->getResponse(), true);
+			if (is_array($body) && isset($body['error']['message']) && $body['error']['message'] !== '')
+			{
+				$text .= ' - ' . $body['error']['message'];
+			}
+			return array('status' => 'ERR', 'code' => 101, 'text' => $text);
 		}
 		
 		$response = $http->getResponse();

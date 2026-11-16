@@ -79,11 +79,13 @@
 		$i += 1;
 	}
 	
-	$count_arr = array_count_values($check_slot_arr);
-	$popular_val = array_search(max($count_arr), $count_arr);
+	# array_count_values() only accepts strings/integers: day-off dates hold a boolean (and slot lengths may be floats/NULL),
+	# which raised "Can only count string and integer values" warnings. Convert/skip them; max() of an empty array is a fatal error in PHP 8.
+	$count_arr = array_count_values(array_map('strval', array_filter($check_slot_arr, 'is_scalar')));
+	$popular_val = !empty($count_arr) ? array_search(max($count_arr), $count_arr) : null;
 	
-	$count_break_arr = array_count_values($is_same_lunch_break_arr);
-	$popular_break_val = array_search(max($count_break_arr), $count_break_arr);
+	$count_break_arr = array_count_values(array_filter($is_same_lunch_break_arr, 'is_string'));
+	$popular_break_val = !empty($count_break_arr) ? array_search(max($count_break_arr), $count_break_arr) : null;
 	
 	foreach($check_slot_arr as $iso_date => $val)
 	{

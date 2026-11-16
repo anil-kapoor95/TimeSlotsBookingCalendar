@@ -113,7 +113,9 @@ class pjStripe extends pjStripeAppController
 
         $params['locale'] = self::getPaymentLocale($params['locale_id']);
         $params['cancel_url'] = "{$params['notify_url']}&cancel_hash={$params['cancel_hash']}";
-        $params['amount'] *= 100;
+        # Stripe wants an INTEGER amount in the smallest currency unit. A plain "* 100" gives floats such as
+        # 2.20 * 100 = 220.00000000000003 which Stripe rejects ("Invalid integer"), so no Checkout session was created.
+        $params['amount'] = (int) round(((float) $params['amount']) * 100);
 
         return $params;
     }
@@ -213,15 +215,32 @@ class pjStripe extends pjStripeAppController
 		
 		$sdk = new pjStripeSDK(null, $params['public_key'], $params['private_key']);
 		
+		$stripe_error = null;
 		try {
 			$result = $sdk->createSession($data);
 			
 			if (isset($result['id']))
 			{
 				$this->set('session_id', $result['id']);
+				if (!empty($result['url']))
+				{
+					$this->set('checkout_url', $result['url']);
+				}
+			} else {
+				$stripe_error = 'Stripe did not return a Checkout session.';
 			}
 		} catch (Exception $e) {
-			//echo $e->getMessage();
+			$stripe_error = $e->getMessage();
+		}
+		
+		if ($stripe_error !== null)
+		{
+			if ($stripe_error === '' || $stripe_error === null)
+			{
+				$stripe_error = 'Unknown error';
+			}
+			$this->log(self::$logPrefix . 'Checkout session was not created. Booking: ' . @$params['custom'] . ' | Amount: ' . @$params['amount'] . ' | Error: ' . $stripe_error);
+			$this->set('stripe_error', $stripe_error);
 		}
 		
 		$this->set('arr', $params);

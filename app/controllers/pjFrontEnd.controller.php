@@ -550,6 +550,26 @@ class pjFrontEnd extends pjFront
 			    self::jsonResponse(array('status' => 'ERR', 'code' => 100, 'text' => ''));
 			}
 			
+			# One-time order token (created with the confirm form). If the very same form is submitted again
+			# (double click, retry after a timeout, ...) the booking that was already stored is returned
+			# instead of creating a second booking / second payment.
+			$order_token = (string) $this->_post->toString('order_token');
+			if (preg_match('/^[A-Za-z0-9]{16,64}$/', $order_token) !== 1)
+			{
+			    $order_token = '';
+			}
+			if ($order_token !== '' && isset($_SESSION['tsb_order_tokens'][$order_token]))
+			{
+			    $done = $_SESSION['tsb_order_tokens'][$order_token];
+			    self::jsonResponse(array(
+			        'status' => 'OK',
+			        'code' => 200,
+			        'text' => 'Order has been stored.',
+			        'booking_uuid' => $done['uuid'],
+			        'payment_method' => $done['payment_method']
+			    ));
+			}
+			
 			$response = $this->validateCheckout($this->_get->toInt('cid'));
 			if ($response['status'] == 'ERR')
 			{
@@ -800,8 +820,22 @@ class pjFrontEnd extends pjFront
 
 			#$bs_ids = $pjBookingSlotModel->getDataPair('id', null);
 				
-			pjFrontEnd::pjActionConfirmSend($this->option_arr, $booking_arr, 'confirm');
+			# The confirmation e-mail(s)/SMS are sent AFTER the answer has reached the browser (see below):
+			# a slow or unreachable SMTP server must never keep the customer waiting on "Confirm & Proceed".
 			# Confirmation email(s)
+			
+			if ($order_token !== '')
+			{
+			    if (!isset($_SESSION['tsb_order_tokens']) || !is_array($_SESSION['tsb_order_tokens']))
+			    {
+			        $_SESSION['tsb_order_tokens'] = array();
+			    }
+			    $_SESSION['tsb_order_tokens'][$order_token] = array('uuid' => $data['uuid'], 'payment_method' => @$data['payment_method']);
+			    if (count($_SESSION['tsb_order_tokens']) > 20)
+			    {
+			        array_shift($_SESSION['tsb_order_tokens']);
+			    }
+			}
 			
 			$_SESSION[$this->defaultCart][$cid] = NULL;
 			unset($_SESSION[$this->defaultCart][$cid]);
@@ -828,13 +862,20 @@ class pjFrontEnd extends pjFront
 			    unset($_SESSION[$this->defaultSlots]);
 			}
 			
-			pjAppController::jsonResponse(array(
+			pjAppController::jsonResponseAndContinue(array(
 				'status' => 'OK',
 				'code' => 200,
 				'text' => 'Order has been stored.',
 				'booking_uuid' => $data['uuid'],
 				'payment_method' => @$data['payment_method']
 			));
+			
+			# Customer already has the answer, now notify (failures here must not affect the booking)
+			try {
+				pjFrontEnd::pjActionConfirmSend($this->option_arr, $booking_arr, 'confirm');
+			} catch (Exception $e) {
+				$this->log('Confirmation e-mail failed. Booking ID: ' . $booking_id . ' | ' . $e->getMessage());
+			}
 		}
 		exit;
 	}
@@ -901,7 +942,11 @@ class pjFrontEnd extends pjFront
     				        $pjBookingModel
     				        ->reset()
     				        ->set('id', $booking_arr['id'])
-    				        ->modify(array('booking_status' => $option_arr['o_status_if_paid']));
+    				        ->modify(array_merge(
+    				            array('booking_status' => $option_arr['o_status_if_paid'], 'processed_on' => ':NOW()'),
+    				            # keep the gateway transaction id (Stripe payment intent) so the payment can be traced / refunded
+    				            !empty($response['txn_id']) ? array('txn_id' => $response['txn_id']) : array()
+    				        ));
     				        
     				        $booking_arr['bs_arr'] = pjBookingSlotModel::factory()
     				        ->join('pjBooking', 't2.id=t1.booking_id', 'inner')
@@ -909,9 +954,18 @@ class pjFrontEnd extends pjFront
     				        ->findAll()
     				        ->getData();
     				        
-                			pjFrontEnd::pjActionConfirmSend($option_arr, $booking_arr, 'payment');
+    				            # answer the payment gateway / redirect the customer first, e-mail afterwards
+				            $send_payment_mail = true;
 				        }
-            			echo $option_arr['o_thankyou_page'];
+				        pjAppController::finishResponse($option_arr['o_thankyou_page'], 'text/html; charset=utf-8');
+				        if (!empty($send_payment_mail))
+				        {
+				            try {
+				                pjFrontEnd::pjActionConfirmSend($option_arr, $booking_arr, 'payment');
+				            } catch (Exception $e) {
+				                $this->log('Payment e-mail failed. Booking ID: ' . $booking_id . ' | ' . $e->getMessage());
+				            }
+				        }
             			exit;
 				    }elseif($response['status'] == 'CANCEL'){
 				        $this->log("Payments | {$pjPlugin} plugin<br>Payment was cancelled. UUID: {$uuid}");

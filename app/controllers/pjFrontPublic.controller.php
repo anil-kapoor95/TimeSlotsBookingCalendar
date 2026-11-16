@@ -268,10 +268,21 @@ class pjFrontPublic extends pjFront
 			{
 			    $booking_arr = $booking_arr[0];
 			    
+			    # Never offer the payment form again for a booking that is already paid or was cancelled
+			    # (reloading #!/Booking/<uuid> or pressing Back must not lead to a second payment)
+			    $block_payment = false;
+			    if ($booking_arr['booking_status'] == 'cancelled')
+			    {
+			        $block_payment = true;
+			        $this->set('status', 'ERR');
+			    } elseif ($this->option_arr['o_status_if_paid'] != $this->option_arr['o_status_if_not_paid'] && $booking_arr['booking_status'] == $this->option_arr['o_status_if_paid']) {
+			        $block_payment = true;
+			    }
+			    
 			    if(pjObject::getPlugin('pjPayments') !== NULL)
 			    {
 			        $pjPlugin = pjPayments::getPluginName($booking_arr['payment_method']);
-			        if(pjObject::getPlugin($pjPlugin) !== NULL)
+			        if(!$block_payment && pjObject::getPlugin($pjPlugin) !== NULL)
 			        {
 			            $this->set('params', $pjPlugin::getFormParams(array('payment_method' => $booking_arr['payment_method']), array(
 			                'locale_id'	 => $this->getLocaleId(),

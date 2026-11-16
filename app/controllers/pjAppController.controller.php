@@ -577,6 +577,50 @@ class pjAppController extends pjBaseAppController
 		exit;
 	}
 	
+	/**
+	 * Send $body to the browser and finish the HTTP response, but keep the script running.
+	 * Slow work (confirmation e-mails over SMTP, SMS) can then run without the visitor waiting
+	 * for it, and without the PHP session file staying locked (a locked session freezes every
+	 * other request of the same visitor). Anything that must be saved in $_SESSION has to be
+	 * done BEFORE calling this method.
+	 */
+	public static function finishResponse($body, $content_type = 'application/json; charset=utf-8')
+	{
+		ignore_user_abort(true);
+		@set_time_limit(120);
+		if (function_exists('session_status') && session_status() === PHP_SESSION_ACTIVE)
+		{
+			@session_write_close();
+		}
+		if (function_exists('apache_setenv'))
+		{
+			@apache_setenv('no-gzip', '1');
+		}
+		@ini_set('zlib.output_compression', 'Off');
+		if (!headers_sent())
+		{
+			header("Content-Type: " . $content_type);
+			header("Content-Encoding: none");
+			header("Content-Length: " . strlen($body));
+			header("Connection: close");
+		}
+		echo $body;
+		while (ob_get_level() > 0)
+		{
+			@ob_end_flush();
+		}
+		@flush();
+		if (function_exists('fastcgi_finish_request'))
+		{
+			@fastcgi_finish_request();
+		}
+	}
+	
+	public static function jsonResponseAndContinue($arr)
+	{
+		self::finishResponse(pjAppController::jsonEncode($arr), 'application/json; charset=utf-8');
+	}
+	
 	public static function getFromEmail()
 	{
 	    $arr = pjAuthUserModel::factory()

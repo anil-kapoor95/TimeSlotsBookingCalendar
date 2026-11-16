@@ -69,8 +69,22 @@
 		return false;
 	}
 	
+	// while an order is being sent the visitor must not wander off to another step (Back button, links, ...)
+	var busyHash = null;
+	var ignoreNextHash = false;
+	
 	function onHashChange() {
 		var i, iCnt, m;
+		if (busyHash !== null && window.location.hash !== busyHash) {
+			// put the address back; the hashchange this causes must not re-render the current step
+			ignoreNextHash = true;
+			window.location.hash = busyHash;
+			return;
+		}
+		if (ignoreNextHash) {
+			ignoreNextHash = false;
+			return;
+		}
 		for (i = 0, iCnt = routes.length; i < iCnt; i++) {
 			m = unescape(window.location.hash).match(routes[i].pattern);
 			if (m !== null) {
@@ -148,6 +162,29 @@
 			if (this.container) {
 				this.$container = pjQ.$(this.container);
 			}
+			
+			this.busy = false;
+			// ignore every click inside the widget while an order is being processed
+			this.$container.on("click.tsbbusy", "a, button, .btn, label, input[type='submit']", function (e) {
+				if (self.busy) {
+					if (e && e.preventDefault) {
+						e.preventDefault();
+					}
+					if (e && e.stopImmediatePropagation) {
+						e.stopImmediatePropagation();
+					}
+					return false;
+				}
+			}).on("click.tsbretry", ".pjTsSelectorRetryPayment", function (e) {
+				if (e && e.preventDefault) {
+					e.preventDefault();
+				}
+				var $box = pjQ.$(this).closest(".tsb-stripe-box");
+				$box.find(".tsb-stripe-failed").hide();
+				$box.find(".tsb-stripe-connecting").show();
+				self.loadBooking.call(self);
+				return false;
+			});
 			
 			this.$container.on("click.rb", ".pjTsSelectorLocale", function (e) {
 				if (e && e.preventDefault) {
@@ -756,6 +793,44 @@
 
 			return this;
 		},
+		// Processing state of "Confirm & Proceed": spinner + message, everything else locked
+		setBusy: function ($form, message) {
+			this.busy = true;
+			busyHash = window.location.hash;
+			window.onbeforeunload = function (e) {
+				e = e || window.event;
+				if (e) {
+					e.returnValue = message;
+				}
+				return message;
+			};
+			var $btn = $form.find(".tsb-confirm-btn");
+			$btn.addClass("tsb-is-loading").attr("aria-busy", "true");
+			$btn.find(".tsb-spinner").show();
+			$form.find(".tsb-pay-error").hide().text("");
+			$form.find(".tsb-processing").show().find(".tsb-processing-text").text(message);
+			this.disableButtons.call(this);
+			$form.find("a.btn").addClass("disabled").attr("aria-disabled", "true");
+			
+			return this;
+		},
+		// Always called when processing ends without leaving the page: button usable again, optional error text
+		clearBusy: function ($form, errorMessage) {
+			this.busy = false;
+			busyHash = null;
+			window.onbeforeunload = null;
+			var $btn = $form.find(".tsb-confirm-btn");
+			$btn.removeClass("tsb-is-loading").removeAttr("aria-busy");
+			$btn.find(".tsb-spinner").hide();
+			$form.find(".tsb-processing").hide();
+			this.enableButtons.call(this);
+			$form.find("a.btn").removeClass("disabled").removeAttr("aria-disabled");
+			if (errorMessage) {
+				$form.find(".tsb-pay-error").text(errorMessage).show();
+			}
+			
+			return this;
+		},
 		errorHandler: function (msg) {
 			this.$container.find(".tsSelectorNotice:first").html(msg).show();
 			
@@ -1061,15 +1136,23 @@
 		},
 		loadBooking: function () {
 			var self = this;
-			pjQ.$.get([this.options.folder, "index.php?controller=pjFrontPublic&action=pjActionBooking"].join(""), {
-				"session_id": self.options.session_id,
-				"cid": self.cid,
-				"locale": this.options.locale,
-				"hide": this.options.hide,
-				"switch": this.options.switch,
-				"booking_uuid": this.booking_uuid,
-				"multi" : self.options.multi
+			pjQ.$.ajax({
+				type: "GET",
+				url: [this.options.folder, "index.php?controller=pjFrontPublic&action=pjActionBooking"].join(""),
+				timeout: 45000,
+				data: {
+					"session_id": self.options.session_id,
+					"cid": self.cid,
+					"locale": this.options.locale,
+					"hide": this.options.hide,
+					"switch": this.options.switch,
+					"booking_uuid": this.booking_uuid,
+					"multi" : self.options.multi
+				}
 			}).done(function (data) {
+				self.busy = false;
+				busyHash = null;
+				window.onbeforeunload = null;
 				if (data.code != undefined && data.status == 'ERR') {
 					hashBang("#!/IpBlocked");
 				}else{
@@ -1083,6 +1166,23 @@
 					if ($payment_form.length > 0) {
 						$payment_form.trigger('submit');
 					}
+				}
+			}).fail(function (jqXHR, textStatus) {
+				// The booking itself is already stored - tell the visitor and let them retry (no new booking is created)
+				var $form = self.$container.find(".pjTsSelectorPreviewForm");
+				var msg = textStatus == "timeout" ? ($form.attr("data-msg-timeout") || "") : ($form.attr("data-msg-network") || "");
+				if (!msg) {
+					msg = "We could not reach the server. Please check your connection and try again.";
+				}
+				if ($form.length > 0) {
+					self.clearBusy.call(self, $form, msg);
+				} else {
+					self.busy = false;
+					busyHash = null;
+					window.onbeforeunload = null;
+					self.enableButtons.call(self);
+					self.$container.html('<div class="panel panel-primary"><div class="panel-body"><p class="alert alert-danger tsb-pay-error"></p></div><div class="panel-footer"><a href="#" class="btn btn-primary pull-left pjTsSelectorRetryPayment">Try again</a></div></div>');
+					self.$container.find(".tsb-pay-error").text(msg);
 				}
 			});
 			
@@ -1269,23 +1369,46 @@
 								error.insertAfter(element.parent());
 							},
 							submitHandler: function (form) {
-								self.disableButtons.call(self);
-								self.duplicated = 0;
+								if (self.busy) {
+									return false;
+								}
 								var $form = pjQ.$(form);
-								pjQ.$.post([self.options.folder, "index.php?controller=pjFrontEnd&action=pjActionOrder", "&session_id=", self.options.session_id, "&cid=", self.cid, "&locale=", self.options.locale].join(""), $form.serialize()).done(function (data) {
-									if (data.status == "OK") {
-										hashBang("#!/Booking/" + data.booking_uuid);
-									} else if (data.status == "ERR") {
-										if(data.code == '101')
-										{
-											self.duplicated = 1;
-											self.loadPreview.call(self);
-										}else{
-											self.enableButtons.call(self);
+								var isStripe = $form.attr("data-payment") === "stripe";
+								var msgWait = $form.attr("data-msg-wait") || "Please wait, confirming your booking...";
+								var msgStripe = $form.attr("data-msg-stripe") || "Connecting to Stripe, please wait...";
+								var msgError = $form.attr("data-msg-error") || "Something went wrong while confirming your booking. Please try again.";
+								var msgTimeout = $form.attr("data-msg-timeout") || msgError;
+								var msgNetwork = $form.attr("data-msg-network") || msgError;
+								self.setBusy.call(self, $form, isStripe ? msgStripe : msgWait);
+								self.duplicated = 0;
+								pjQ.$.ajax({
+									type: "POST",
+									url: [self.options.folder, "index.php?controller=pjFrontEnd&action=pjActionOrder", "&session_id=", self.options.session_id, "&cid=", self.cid, "&locale=", self.options.locale].join(""),
+									data: $form.serialize(),
+									timeout: 45000
+								}).done(function (data) {
+									if (data && data.status == "OK" && data.booking_uuid) {
+										// order stored: from now on only the next step may change the address
+										busyHash = null;
+										window.onbeforeunload = null;
+										self.booking_uuid = data.booking_uuid;
+										var target = "#!/Booking/" + data.booking_uuid;
+										if (window.location.hash == target) {
+											self.loadBooking.call(self);
+										} else {
+											hashBang(target);
 										}
+									} else if (data && data.status == "ERR" && data.code == '101') {
+										self.busy = false;
+										busyHash = null;
+										window.onbeforeunload = null;
+										self.duplicated = 1;
+										self.loadPreview.call(self);
+									} else {
+										self.clearBusy.call(self, $form, msgError);
 									}
-								}).fail(function () {
-									self.enableButtons.call(self);
+								}).fail(function (jqXHR, textStatus) {
+									self.clearBusy.call(self, $form, textStatus == "timeout" ? msgTimeout : (jqXHR && jqXHR.status === 0 ? msgNetwork : msgError));
 								});
 								return false;
 							}
